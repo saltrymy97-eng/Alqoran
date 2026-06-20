@@ -1,72 +1,50 @@
 :root {
-    --bg-deep: #030b1a;
-    --bg-card: rgba(15, 25, 45, 0.6);
+    --bg: #020812;
     --gold: #d4af37;
     --gold-light: #f5e6a3;
     --gold-dark: #8a6d1c;
-    --green: #0f5132;
+    --glass: rgba(18, 25, 40, 0.55);
+    --border: rgba(212, 175, 55, 0.15);
     --text: #e8e8e8;
     --text-muted: #8892b0;
-    --glass: rgba(255, 255, 255, 0.03);
-    --border: rgba(212, 175, 55, 0.15);
-    --radius: 28px;
-    --shadow: 0 25px 60px rgba(0,0,0,0.7);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
     font-family: 'Tajawal', sans-serif;
-    background: radial-gradient(ellipse at 50% 0%, #1a1500 0%, #05070a 40%, #020305 100%);
-    background-attachment: fixed;
+    background: linear-gradient(135deg, #020812 0%, #07101e 25%, #030d1a 50%, #07101e 75%, #020812 100%);
+    background-size: 400% 400%;
+    animation: bgMove 25s ease infinite;
     color: var(--text);
     min-height: 100vh;
     direction: rtl;
 }
+@keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
 .container {
-    max-width: 950px;
+    max-width: 850px;
     margin: 0 auto;
-    padding: 25px 20px;
-    position: relative;
-    z-index: 1;
+    padding: 30px 20px;
 }
 
-/* ========== جزيئات ذهبية ========== */
-.particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-}
-.particle {
-    position: absolute;
-    background: var(--gold);
-    border-radius: 50%;
-    animation: floatUp linear infinite;
-}
-@keyframes floatUp {
-    0% { transform: translateY(100vh) scale(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
-}
-
-/* ========== الحاوية الزجاجية ========== */
-.glass-card {
+.glass-panel {
     background: var(--glass);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 35px;
     padding: 35px 30px;
-    margin: 20px 0;
-    box-shadow: var(--shadow);
+    margin: 30px 0;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-/* ========== البسملة ========== */
 .basmala {
     text-align: center;
     font-family: 'Amiri', serif;
@@ -75,23 +53,22 @@ body {
     background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin: 10px 0;
+    margin: 15px 0;
     animation: goldShine 3s ease-in-out infinite;
 }
 @keyframes goldShine {
     0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.5); }
+    50% { filter: brightness(1.4); }
 }
 
-/* ========== العنوان ========== */
 .uni-title {
     text-align: center;
-    font-size: 2.5em;
+    font-size: 2.4em;
     font-weight: 800;
-    color: #fff;
+    color: #ffffff;
     text-shadow: 0 0 40px rgba(212,175,55,0.3);
     letter-spacing: 2px;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 .branch-title {
     text-align: center;
@@ -99,17 +76,16 @@ body {
     color: var(--gold);
     letter-spacing: 5px;
     margin-bottom: 25px;
+    font-weight: 400;
 }
 
-/* ========== فاصل ========== */
 .gold-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5), rgba(245,230,163,0.8), rgba(212,175,55,0.5), transparent);
     margin: 25px 0;
-    box-shadow: 0 0 15px rgba(212,175,55,0.3);
+    box-shadow: 0 0 10px rgba(212,175,55,0.3);
 }
 
-/* ========== الأزرار ========== */
 .btn-row {
     display: flex;
     gap: 12px;
@@ -118,45 +94,46 @@ body {
     margin: 20px 0;
 }
 .btn {
-    background: var(--bg-card);
+    background: rgba(255,255,255,0.04);
     backdrop-filter: blur(15px);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 14px 22px;
-    color: var(--text);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 14px;
+    padding: 14px 24px;
+    color: #e0e0e0;
     font-weight: 600;
     font-size: 1em;
     cursor: pointer;
-    transition: all 0.35s ease;
+    transition: all 0.4s ease;
+    letter-spacing: 0.5px;
 }
 .btn:hover {
-    background: rgba(212,175,55,0.15);
+    background: rgba(212,175,55,0.12);
     border-color: var(--gold);
     color: var(--gold-light);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(212,175,55,0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(212,175,55,0.2);
 }
 
-/* ========== الدردشة ========== */
 .chat-box {
-    max-height: 480px;
+    max-height: 450px;
     overflow-y: auto;
-    padding: 10px 5px;
+    padding: 5px;
 }
 .chat-msg {
     padding: 16px 20px;
     border-radius: 20px;
-    margin: 12px 0;
+    margin: 10px 0;
     max-width: 80%;
     line-height: 1.8;
-    animation: slideIn 0.4s ease;
+    font-size: 1.02em;
+    animation: slideIn 0.35s ease;
 }
 @keyframes slideIn {
-    from { opacity: 0; transform: translateY(15px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 .user-msg {
-    background: rgba(212,175,55,0.12);
+    background: rgba(212,175,55,0.1);
     border: 1px solid rgba(212,175,55,0.2);
     margin-right: auto;
     margin-left: 0;
@@ -170,17 +147,16 @@ body {
     margin-right: 0;
 }
 
-/* ========== الإدخال ========== */
-.input-area {
+.input-row {
     display: flex;
     gap: 10px;
     align-items: center;
     margin-top: 20px;
 }
-.input-area input {
+.input-row input {
     flex: 1;
     padding: 16px 22px;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.05);
     border: 1px solid rgba(212,175,55,0.2);
     border-radius: 50px;
     color: #fff;
@@ -188,73 +164,71 @@ body {
     outline: none;
     transition: 0.3s;
 }
-.input-area input:focus {
+.input-row input:focus {
     border-color: var(--gold);
     box-shadow: 0 0 25px rgba(212,175,55,0.2);
 }
-.input-area input::placeholder {
+.input-row input::placeholder {
     color: rgba(255,255,255,0.3);
 }
 
-/* ========== أيقونة الميكروفون (واتساب ستايل) ========== */
 .mic-btn {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    border: none;
-    background: var(--green);
+    border: 1px solid rgba(212,175,55,0.3);
+    background: rgba(15,81,50,0.4);
     color: #fff;
-    font-size: 1.3em;
+    font-size: 1.1em;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: all 0.35s ease;
     flex-shrink: 0;
 }
 .mic-btn:hover {
-    background: #0a3a22;
-    transform: scale(1.08);
+    background: rgba(15,81,50,0.7);
+    border-color: var(--gold);
     box-shadow: 0 0 20px rgba(15,81,50,0.5);
 }
 .mic-btn.recording {
-    background: #e74c3c;
-    animation: pulse 1.2s ease-in-out infinite;
+    background: rgba(200,40,40,0.6);
+    border-color: #e74c3c;
+    animation: micPulse 1s ease-in-out infinite;
 }
-@keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.6); }
-    50% { box-shadow: 0 0 0 18px rgba(231,76,60,0); }
+@keyframes micPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
+    50% { box-shadow: 0 0 0 16px rgba(231,76,60,0); }
 }
+
 .send-btn {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    border: none;
-    background: var(--gold);
-    color: #000;
-    font-size: 1.2em;
+    border: 1px solid rgba(212,175,55,0.3);
+    background: rgba(212,175,55,0.2);
+    color: var(--gold-light);
+    font-size: 1.1em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.35s ease;
     flex-shrink: 0;
 }
 .send-btn:hover {
-    background: var(--gold-light);
-    transform: scale(1.08);
+    background: var(--gold);
+    color: #000;
+    box-shadow: 0 0 25px rgba(212,175,55,0.5);
 }
 
-/* ========== أيقونة الصوت في الرسائل ========== */
 .voice-icon {
     color: var(--gold);
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 8px;
+    opacity: 0.7;
     transition: 0.3s;
 }
 .voice-icon:hover {
+    opacity: 1;
     color: var(--gold-light);
-    transform: scale(1.2);
 }
 
-/* ========== التذييل ========== */
 .footer {
     text-align: center;
     color: var(--text-muted);
@@ -266,8 +240,7 @@ body {
 @media (max-width: 600px) {
     .basmala { font-size: 1.8em; }
     .uni-title { font-size: 1.5em; }
-    .container { padding: 10px; }
-    .glass-card { padding: 20px 15px; }
+    .glass-panel { padding: 20px 15px; }
     .btn { padding: 10px 16px; font-size: 0.85em; }
     .chat-msg { max-width: 90%; }
 }
