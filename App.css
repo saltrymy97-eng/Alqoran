@@ -1,18 +1,273 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-body { background-color: #fbfcfb; color: #2b3a30; min-height: 100vh; }
-.container { max-width: 900px; margin: 0 auto; padding: 20px; }
-.basmala { text-align: center; font-family: 'Amiri', serif; font-size: 2.5em; color: #0f5132; font-weight: 700; margin: 10px 0; }
-.uni-title { text-align: center; font-size: 2em; color: #0f5132; font-weight: 800; line-height: 1.4; }
-.branch-title { text-align: center; font-size: 1em; color: #6c757d; letter-spacing: 2px; margin-bottom: 20px; font-weight: 500; }
-.quran-verse { text-align: center; font-size: 1.3em; color: #bfa15f; font-family: 'Amiri', serif; font-weight: 600; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 14px 0; margin: 20px 0; }
-.btn-row { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; justify-content: center; }
-.btn { background: #ffffff; color: #0f5132; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 20px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-.btn:hover { background: #0f5132; color: #ffffff; }
-.chat-box { background: #ffffff; border: 1px solid #edf2f7; border-radius: 16px; padding: 20px; margin: 20px 0; min-height: 300px; max-height: 500px; overflow-y: auto; }
-.chat-msg { padding: 14px 18px; border-radius: 12px; margin: 10px 0; max-width: 80%; line-height: 1.7; }
-.user-msg { background: #e8f5e9; border-right: 3px solid #0f5132; margin-left: auto; text-align: right; }
-.bot-msg { background: #f5f5f5; border-left: 3px solid #bfa15f; }
-.input-row { display: flex; gap: 10px; align-items: center; }
-.input-row input { flex: 1; padding: 14px 18px; border: 1px solid #cbd5e1; border-radius: 25px; font-size: 1em; outline: none; }
-.send-btn { background: #0f5132; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2em; cursor: pointer; }
-.footer { text-align: center; color: #6c757d; font-size: 0.8em; margin-top: 30px; padding: 20px 0; }
+:root {
+    --bg-deep: #030b1a;
+    --bg-card: rgba(15, 25, 45, 0.6);
+    --gold: #d4af37;
+    --gold-light: #f5e6a3;
+    --gold-dark: #8a6d1c;
+    --green: #0f5132;
+    --text: #e8e8e8;
+    --text-muted: #8892b0;
+    --glass: rgba(255, 255, 255, 0.03);
+    --border: rgba(212, 175, 55, 0.15);
+    --radius: 28px;
+    --shadow: 0 25px 60px rgba(0,0,0,0.7);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background: radial-gradient(ellipse at 50% 0%, #1a1500 0%, #05070a 40%, #020305 100%);
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+}
+
+.container {
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 25px 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== جزيئات ذهبية ========== */
+.particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+}
+.particle {
+    position: absolute;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* ========== الحاوية الزجاجية ========== */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 35px 30px;
+    margin: 20px 0;
+    box-shadow: var(--shadow);
+}
+
+/* ========== البسملة ========== */
+.basmala {
+    text-align: center;
+    font-family: 'Amiri', serif;
+    font-size: 2.6em;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+    animation: goldShine 3s ease-in-out infinite;
+}
+@keyframes goldShine {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+}
+
+/* ========== العنوان ========== */
+.uni-title {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(212,175,55,0.3);
+    letter-spacing: 2px;
+    line-height: 1.3;
+}
+.branch-title {
+    text-align: center;
+    font-size: 1.1em;
+    color: var(--gold);
+    letter-spacing: 5px;
+    margin-bottom: 25px;
+}
+
+/* ========== فاصل ========== */
+.gold-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    margin: 25px 0;
+    box-shadow: 0 0 15px rgba(212,175,55,0.3);
+}
+
+/* ========== الأزرار ========== */
+.btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+}
+.btn {
+    background: var(--bg-card);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 14px 22px;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.35s ease;
+}
+.btn:hover {
+    background: rgba(212,175,55,0.15);
+    border-color: var(--gold);
+    color: var(--gold-light);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(212,175,55,0.2);
+}
+
+/* ========== الدردشة ========== */
+.chat-box {
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 10px 5px;
+}
+.chat-msg {
+    padding: 16px 20px;
+    border-radius: 20px;
+    margin: 12px 0;
+    max-width: 80%;
+    line-height: 1.8;
+    animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.user-msg {
+    background: rgba(212,175,55,0.12);
+    border: 1px solid rgba(212,175,55,0.2);
+    margin-right: auto;
+    margin-left: 0;
+    text-align: right;
+    color: #f0e6c0;
+}
+.bot-msg {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* ========== الإدخال ========== */
+.input-area {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 20px;
+}
+.input-area input {
+    flex: 1;
+    padding: 16px 22px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 50px;
+    color: #fff;
+    font-size: 1.05em;
+    outline: none;
+    transition: 0.3s;
+}
+.input-area input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 25px rgba(212,175,55,0.2);
+}
+.input-area input::placeholder {
+    color: rgba(255,255,255,0.3);
+}
+
+/* ========== أيقونة الميكروفون (واتساب ستايل) ========== */
+.mic-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: var(--green);
+    color: #fff;
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.mic-btn:hover {
+    background: #0a3a22;
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(15,81,50,0.5);
+}
+.mic-btn.recording {
+    background: #e74c3c;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.6); }
+    50% { box-shadow: 0 0 0 18px rgba(231,76,60,0); }
+}
+.send-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold);
+    color: #000;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+.send-btn:hover {
+    background: var(--gold-light);
+    transform: scale(1.08);
+}
+
+/* ========== أيقونة الصوت في الرسائل ========== */
+.voice-icon {
+    color: var(--gold);
+    cursor: pointer;
+    margin-left: 10px;
+    transition: 0.3s;
+}
+.voice-icon:hover {
+    color: var(--gold-light);
+    transform: scale(1.2);
+}
+
+/* ========== التذييل ========== */
+.footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8em;
+    margin-top: 40px;
+    padding: 15px 0;
+}
+
+@media (max-width: 600px) {
+    .basmala { font-size: 1.8em; }
+    .uni-title { font-size: 1.5em; }
+    .container { padding: 10px; }
+    .glass-card { padding: 20px 15px; }
+    .btn { padding: 10px 16px; font-size: 0.85em; }
+    .chat-msg { max-width: 90%; }
+}
