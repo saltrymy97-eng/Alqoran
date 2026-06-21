@@ -1,59 +1,114 @@
 import { Redis } from '@upstash/redis';
 
-// إعداد الاتصال بقاعدة البيانات السحابية
+// إعداد الاتصال بقاعدة البيانات السحابية Upstash
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN,
 });
 
+// ==========================================
+// 1. نظام التصنيف الذكي (Smart Classification Engine)
+// ==========================================
+function smartClassify(question) {
+    const q = question.toLowerCase();
+    
+    if ((q.includes("تخصص") || q.includes("قسم") || q.includes("كلية")) && 
+        (q.includes("رسوم") || q.includes("سعر") || q.includes("تكلفة") || q.includes("تكاليف"))) {
+        return "majors";
+    }
+    if (q.includes("رسوم") || q.includes("تكاليف") || q.includes("مالية") || q.includes("دفع") || q.includes("قسط") || q.includes("سداد") || q.includes("منحة") || q.includes("سعر")) {
+        return "fees";
+    }
+    if (q.includes("امتحان") || q.includes("اختبار") || q.includes("نتيجة") || q.includes("درجات") || q.includes("معدل") || q.includes("نجاح") || q.includes("رسوب")) {
+        return "exams";
+    }
+    if (q.includes("جدول") || q.includes("جداول") || q.includes("جدوال") || q.includes("مواعيد") || q.includes("محاضرة") || q.includes("دوام") || q.includes("حضور") || q.includes("غياب")) {
+        return "schedules";
+    }
+    if (q.includes("تواصل") || q.includes("رقم") || q.includes("اتصال") || q.includes("ايميل") || q.includes("عنوان") || q.includes("موقع") || q.includes("هاتف") || q.includes("أين") || q.includes("وين")) {
+        return "contacts";
+    }
+    if (q.includes("تخصص") || q.includes("قسم") || q.includes("كلية") || q.includes("بكالوريوس") || q.includes("دراسة")) {
+        return "majors";
+    }
+    
+    return null; // تعود بـ null لدمج السياق بالكامل إذا لم يحدد القسم
+}
+
 export default async function handler(req, res) {
+    // تعيين الرؤوس للاحترافية والأمان
     res.setHeader('Content-Type', 'application/json');
 
     if (req.method === 'POST') {
         const { password, question, ...data } = req.body;
 
-        // 1. بوابة الإدارة لحفظ البيانات
+        // ==========================================
+        // 2. بوابة التحكم والإشراف (Admin Gateway)
+        // ==========================================
         if (password === 'admin123') {
             if (Object.keys(data).length > 0) {
                 await redis.set('university_data', data);
-                return res.status(200).json({ success: true, message: '✅ تم تحديث البيانات بنجاح.' });
+                return res.status(200).json({ success: true, message: '✅ تم تحديث مصفوفة البيانات بنجاح.' });
             }
             return res.status(200).json({ success: true, status: 'authenticated' });
         }
 
-        // 2. محرك المحادثة الاحترافي (نظام ذكاء اصطناعي تفاعلي)
+        // ==========================================
+        // 3. محرك الاستجابة الذكي للطلاب (AI Core)
+        // ==========================================
         if (question) {
             try {
-                // جلب البيانات من Redis
+                // تحميل بيانات الجامعة من السحابة
                 const universityData = await redis.get('university_data') || {};
                 
-                // البرومبت الاحترافي (هندسة التفكير)
-                const systemInstruction = `
-                أنت المساعد الذكي "سالم" لجامعة القرآن الكريم - فرع غيل باوزير. دورك تقديم استشارات أكاديمية دقيقة وموثوقة.
+                // تحديد الفئة وبناء السياق (Context Building) تماماً كالسيرفر الخاص بك
+                const category = smartClassify(question);
+                let context = "";
 
-                [استراتيجية العمل - Chain of Thought]:
-                1. التحليل: افهم القصد من سؤال الطالب بدقة.
-                2. البحث: ابحث في البيانات المتاحة أدناه حصراً عن المطابقة.
-                3. التنفيذ: 
-                   - ابدأ بفقرة ترحيبية مهنية مختصرة.
-                   - اعرض المعلومات في نقاط مركزة (Bullet points) بحد أقصى 3 نقاط للإجابة.
-                   - اختم بجملة توجيهية (Call to Action) لتشجيع الطالب على الاستفسار عن تفاصيل أخرى.
-                4. التصفية: احذف أي رموز تقنية، شرطات، أو تكرار. اجعل اللغة العربية فصيحة ومناسبة للنطق الصوتي.
+                if (category && universityData[category] && universityData[category].trim() !== "") {
+                    context = universityData[category];
+                } else {
+                    // دمج الحقول المتاحة إذا لم يتم التعرف على الفئة أو الحقل المطلوب فارغ
+                    context = Object.entries(universityData)
+                        .filter(([_, value]) => value && value.trim() !== "")
+                        .map(([key, value]) => `${key}: ${value}`)
+                        .join("\n\n");
+                }
 
-                [قاعدة البيانات الرسمية]:
-                ${JSON.stringify(universityData, null, 2)}
+                // الحماية ضد البيانات الفارغة
+                if (!context || context.trim() === "") {
+                    return res.status(200).json({ reply: "عذراً، لا تتوفر لدي بيانات حالياً. يرجى التواصل مع إدارة الجامعة." });
+                }
 
-                [تنبيه هام]: 
-                - إذا لم تتوفر المعلومة في البيانات، اعتذر بكياسة ووجه الطالب لمراجعة إدارة الفرع.
-                - حافظ على "شخصية المؤسسة" (وقار، علم، احترافية).
-                `;
+                // شخصية المساعد الاحترافية والصارمة المأخوذة من قالبك المُحسن
+                const systemPrompt = `أنت موظف استقبال محترف في جامعة القرآن الكريم والعلوم الإسلامية - فرع غيل باوزير بحضرموت.
+أنت خبير في شؤون الجامعة، تجيب بدقة ووضوح. تتحدث العربية الفصحى الميسرة بلمسة حضرمية لطيفة.
+
+[المعلومات المتاحة للجمهور]
+${context.substring(0, 2500)}
+
+[تعليمات عامة وملزمة]
+- لا تستخدم الإيموجي نهائياً.
+- لا تكرر التحية بعد الرد الأول.
+- أجب مباشرة دون استخدام عبارات مثل "بناءً على المعلومات المتاحة".
+- كن موجزاً ومفيداً جداً. لا تذكر معلومات لا علاقة لها بالسؤال.
+- إذا كانت المعلومات فارغة أو لا تحتوي على إجابة السؤال، قل بالضبط: 'عذراً، لا تتوفر لدي بيانات حالياً. يرجى التواصل مع إدارة الجامعة.'
+- لا تخترع أي معلومات. لا تخمن. لا تضف شيئاً من عندك.
+- لا تكرر أبداً هيكل القالب أو الرموز مثل [INFO] أو الحقول البرمجية.
+
+[آلية الرد حسب نوع السؤال]
+1. سؤال عن جميع التخصصات: قدم قائمة بأسماء التخصصات فقط، بدون تفاصيل.
+2. سؤال عن تفاصيل تخصص محدد: (الرسوم: اذكر الرقم فقط | المدة: اذكر المدة فقط | الوصف: قدم وصفاً مختصراً من 2-3 جمل).
+3. أسئلة عن الرسوم، الامتحانات، الجداول، أو التواصل: استخرج المعلومة المطلوبة من القسم المناسب وأجب بها فقط.
+4. سؤال خارج نطاق الجامعة: قل: "أنا مختص بشؤون الجامعة فقط. كيف يمكنني مساعدتك في أمور الدراسة؟"
+5. شكر أو تحية: رد باختصار: "العفو"، "وعليكم السلام"، "في خدمتكم". لا تبدأ الرد بتحية جديدة.`;
 
                 const apiKey = process.env.GROQ_API_KEY;
                 if (!apiKey) {
-                    return res.status(500).json({ reply: "⚠️ خطأ في النظام: مفتاح API غير مفعل." });
+                    return res.status(500).json({ reply: "⚠️ النظام يعمل في وضع عدم الاتصال. تأكد من إعداد مفتاح GROQ_API_KEY." });
                 }
 
-                // الاتصال بـ Groq API باستخدام نموذج llama-3.1-8b-instant السريع
+                // استدعاء سيرفر المعالجة لـ Groq
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -63,38 +118,48 @@ export default async function handler(req, res) {
                     body: JSON.stringify({
                         model: 'llama-3.1-8b-instant',
                         messages: [
-                            { role: 'system', content: systemInstruction },
+                            { role: 'system', content: systemPrompt },
                             { role: 'user', content: question.trim() }
                         ],
-                        temperature: 0.2, // دقة عالية ومنطقية
-                        max_tokens: 500
+                        temperature: 0.3, // نفس الـ Temperature الخاص بك للحفاظ على الاتزان والدقة
+                        max_tokens: 400
                     })
                 });
 
-                const groqData = await groqResponse.json();
-                
-                if (groqData.error) {
-                    return res.status(200).json({ reply: `⚠️ تنبيه النظام: ${groqData.error.message}` });
+                if (!groqResponse.ok) {
+                    throw new Error(`استجابة السيرفر غير مستقرة: ${groqResponse.status}`);
                 }
 
-                let reply = groqData.choices?.[0]?.message?.content || "عذراً، لم أستطع فهم استفسارك، يرجى صياغته بشكل أوضح.";
+                const groqData = await groqResponse.json();
+                let answer = groqData.choices?.[0]?.message?.content;
 
-                // تنظيف نهائي للنص ليصبح جاهزاً للنطق والشاشة
-                reply = reply.replace(/[\-\*\#]{2,}/g, '').trim();
+                if (!answer || answer.trim() === "") {
+                    return res.status(200).json({ reply: "عذراً، لا تتوفر لدي بيانات حالياً. يرجى التواصل مع إدارة الجامعة." });
+                }
 
-                return res.status(200).json({ reply });
+                // تنظيف أخير للنصوص من أي شرطات أو نجوم تقنية لضمان التوافق الصوتي
+                answer = answer.replace(/[\-\*\_]{2,}/g, '').trim();
+
+                return res.status(200).json({ reply: answer });
 
             } catch (error) {
-                return res.status(200).json({ reply: "⚠️ حدث خطأ تقني، نعتذر منك." });
+                console.error("AI Server Error:", error);
+                return res.status(200).json({ reply: `⚠️ عذراً، حدث خطأ تقني: ${error.message}` });
             }
         }
         
-        return res.status(400).json({ error: 'طلب غير صالح.' });
+        return res.status(400).json({ error: 'طلب غير صالح، ينقصه نص الاستفسار.' });
     }
 
-    // 3. بوابة جلب البيانات
+    // ==========================================
+    // 4. بوابة جلب البيانات (GET Method)
+    // ==========================================
     if (req.method === 'GET') {
-        const data = await redis.get('university_data');
-        return res.status(200).json(data || {});
+        try {
+            const data = await redis.get('university_data');
+            return res.status(200).json(data || {});
+        } catch (error) {
+            return res.status(500).json({ error: 'فشل جلب البيانات من السحابة.' });
+        }
     }
 }
