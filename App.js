@@ -50,12 +50,20 @@ function App() {
         setLoading(false);
     };
 
+    // تحسين ميزة الرد الصوتي للتوافق مع الأجهزة المحمولة
     const speakText = (text) => {
         if (!window.speechSynthesis || !text) return;
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // إلغاء أي نطق معلق سابقاً
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'ar-SA';
         u.rate = 0.95;
+        u.pitch = 1.0;
+        
+        // محاولة اختيار أفضل صوت عربي متاح على نظام التشغيل
+        const voices = window.speechSynthesis.getVoices();
+        const arVoice = voices.find(v => v.lang.startsWith('ar'));
+        if (arVoice) u.voice = arVoice;
+
         window.speechSynthesis.speak(u);
     };
 
@@ -88,9 +96,8 @@ function App() {
         }
     };
 
-    /* ===== [تعديل واصلاح دالة تسجيل الدخول لتتوافق مع الخادم الخلفي] ===== */
     const loginAdmin = async () => {
-        const cleanedPass = adminPass.trim(); // تنظيف كلمة المرور من المسافات فوراً
+        const cleanedPass = adminPass.trim();
         if (!cleanedPass) return;
         
         try {
@@ -144,7 +151,7 @@ function App() {
         { icon: '📅', label: 'الجداول الدراسية', question: 'أريد الاستفسار عن جداول المحاضرات' },
         { icon: '📝', label: 'جداول الامتحانات', question: 'ما هي مواعيد وترتيبات الامتحانات؟' },
         { icon: '📞', label: 'قنوات التواصل', question: 'كيف يمكنني التواصل مع إدارة الفرع؟' },
-        { icon: '🎓', label: 'التخصصات والرسوم', question: 'ما هي التخصصات الأكاديمية المتاحة ورسومها؟' }
+        { icon: '🎓', label: 'التخصصات والرسوم', question: 'ما هي التخصصات الأكاديمية المتاحة ورسومها? ' }
     ];
 
     const fieldLabels = {
@@ -156,7 +163,7 @@ function App() {
         majors: '🎓 التخصصات الأكاديمية والبرامج'
     };
 
-    // ========== عرض الطالب المطور والفاخر ==========
+    // ========== عرض واجهة الطلاب ==========
     if (!adminMode) {
         return React.createElement('div', { className: 'app-container' },
             React.createElement('header', { className: 'main-header' },
@@ -224,12 +231,12 @@ function App() {
         );
     }
 
-    // ========== عرض لوحة الإدارة الفاخرة ==========
+    // ========== عرض لوحة الإدارة الفاخرة المحدثة بالإحصائيات المتقدمة ==========
     return React.createElement('div', { className: 'app-container admin-theme' },
         React.createElement('header', { className: 'main-header' },
             React.createElement('div', { className: 'basmala-text' }, 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'),
             React.createElement('h1', { className: 'university-name' }, 'بوابة التحكم الرقمية والإشراف'),
-            React.createElement('div', { className: 'branch-badge admin' }, 'لوحة الإدارة والحوكمة')
+            React.createElement('div', { className: 'branch-badge admin' }, 'لوحة الإدارة والحوكمة الإحصائية')
         ),
 
         React.createElement('div', { className: 'admin-main-card' },
@@ -249,6 +256,39 @@ function App() {
                 )
             :
                 React.createElement('div', { className: 'admin-dashboard-layout' },
+                    
+                    // =================== [قسم الإحصائيات الفاخر والمطور] ===================
+                    stats && React.createElement('div', { className: 'analytics-panel' },
+                        React.createElement('h3', { className: 'analytics-title' }, '📊 رصد الأداء الإحصائي الفوري للأنظمة'),
+                        React.createElement('div', { className: 'analytics-grid' },
+                            React.createElement('div', { className: 'analytic-box' }, 
+                                React.createElement('span', { className: 'analytic-big-icon' }, '💬'),
+                                React.createElement('span', { className: 'analytic-number' }, stats.total),
+                                React.createElement('span', { className: 'analytic-label' }, 'إجمالي الأسئلة المستلمة')
+                            ),
+                            React.createElement('div', { className: 'analytic-box' }, 
+                                React.createElement('span', { className: 'analytic-big-icon' }, '⚡'),
+                                React.createElement('span', { className: 'analytic-number' }, stats.today),
+                                React.createElement('span', { className: 'analytic-label' }, 'استفسارات اليوم الحالية')
+                            )
+                        ),
+                        
+                        // رصد الأسئلة الـ 5 الأعلى تكراراً التي يطرحها الطلاب تفاعلياً
+                        stats.top && stats.top.length > 0 && React.createElement('div', { className: 'top-queries-container' },
+                            React.createElement('h4', { className: 'top-queries-title' }, '🔝 الأسئلة الأكثر تكراراً وطلباً من الطلاب:'),
+                            React.createElement('div', { className: 'top-queries-list' },
+                                stats.top.slice(0, 5).map((item, index) => 
+                                    React.createElement('div', { key: index, className: 'top-query-row' },
+                                        React.createElement('span', { className: 'query-rank' }, index + 1),
+                                        React.createElement('span', { className: 'query-text' }, item.question),
+                                        React.createElement('span', { className: 'query-counter-badge' }, `${item.count} تكرار`)
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    // ===================================================================
+
                     React.createElement('h2', { className: 'admin-section-title' }, '⚙️ تحديث قواعد البيانات الفورية للمساعد الذكي'),
                     React.createElement('div', { className: 'admin-inputs-grid' },
                         Object.keys(fieldLabels).map(field =>
@@ -267,20 +307,6 @@ function App() {
                     React.createElement('div', { className: 'admin-action-bar' },
                         React.createElement('button', { className: 'admin-save-btn', onClick: saveAdminData }, '💾 حفظ كافة التعديلات وتحديث النظام الفوري'),
                         adminMsg && React.createElement('p', { className: `admin-status-msg ${adminMsg.includes('✅') ? 'success-color' : 'error-color'}` }, adminMsg)
-                    ),
-
-                    stats && React.createElement('div', { className: 'analytics-panel' },
-                        React.createElement('h3', { className: 'analytics-title' }, '📊 لوحة القياس والإحصائيات الفورية'),
-                        React.createElement('div', { className: 'analytics-grid' },
-                            React.createElement('div', { className: 'analytic-box' }, 
-                                React.createElement('span', { className: 'analytic-number' }, stats.total),
-                                React.createElement('span', { className: 'analytic-label' }, 'إجمالي الاستفسارات المستلمة')
-                            ),
-                            React.createElement('div', { className: 'analytic-box' }, 
-                                React.createElement('span', { className: 'analytic-number' }, stats.today),
-                                React.createElement('span', { className: 'analytic-label' }, 'استفسارات اليوم الحالية')
-                            )
-                        )
                     ),
 
                     React.createElement('button', {
