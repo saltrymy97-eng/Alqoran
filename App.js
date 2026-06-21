@@ -89,6 +89,7 @@ function App() {
     };
 
     const loginAdmin = async () => {
+        if (!adminPass.trim()) return;
         const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -96,6 +97,7 @@ function App() {
         });
         if (res.ok) {
             setAdminLogged(true);
+            setAdminMsg('');
             loadAdminData();
         } else {
             setAdminMsg('❌ كلمة مرور غير صحيحة');
@@ -226,7 +228,8 @@ function App() {
                         className: 'admin-password-input',
                         placeholder: 'أدخل كلمة مرور النظام المشفرة',
                         value: adminPass,
-                        onChange: e => setAdminPass(e.target.value)
+                        onChange: e => setAdminPass(e.target.value),
+                        onKeyPress: e => e.key === 'Enter' && loginAdmin() // ميزة الدخول عبر زر Enter
                     }),
                     React.createElement('button', { className: 'admin-submit-btn', onClick: loginAdmin }, 'التحقق والصلاحية'),
                     adminMsg && React.createElement('p', { className: 'admin-status-msg error-color' }, adminMsg)
