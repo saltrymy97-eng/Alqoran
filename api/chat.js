@@ -6,7 +6,6 @@ const redis = new Redis({
 });
 
 export default async function handler(req, res) {
-    // 1. معالجة طلبات الإدارة (تسجيل الدخول أو الحفظ)
     if (req.method === 'POST') {
         const { password, question, ...data } = req.body;
 
@@ -18,34 +17,30 @@ export default async function handler(req, res) {
             return res.json({ success: true, status: 'authenticated' });
         }
 
-        // 2. معالجة أسئلة الطلاب عبر Groq (Llama 3 8B)
         if (question) {
+            let step = "البدء";
             try {
-                // جلب بيانات الجامعة من سحابة Upstash
+                // 1. جلب البيانات من Upstash
+                step = "قراءة بيانات السحابة (Upstash)";
                 const universityData = await redis.get('university_data') || {};
                 
-                // صياغة النظام والبيانات المرجعية (System Prompt)
                 const systemPrompt = `
-                أنت المساعد الأكاديمي الرقمي الذكي لجامعة القرآن الكريم والعلوم الإسلامية - فرع غيل باوزير بحضرموت.
-                مهمتك هي الإجابة على استفسارات الطلاب بدقة ولطافة وبأسلوب حواري منظم بناءً على البيانات الرسمية المتاحة لديك فقط.
-                إذا لم تكن المعلومة متوفرة في البيانات أدناه، أخبر الطالب بلطف بزيارة إدارة الفرع بغيل باوزير.
-                تجنب تماماً طباعة الرموز البرمجية مثل "---" أو الحقول الجافة في ردك، واجعل النص منسقاً ومريحاً للقراءة والنطق الصوتي.
-
-                بيانات الجامعة الحالية المعتمدة:
-                - التعريف بالفرع: ${universityData.info || 'غير متوفر حالياً'}
-                - الجداول الدراسية والمحاضرات: ${universityData.schedules || 'غير متوفر حالياً'}
-                - مواعيد الامتحانات والاختبارات: ${universityData.exams || 'غير متوفر حالياً'}
-                - الرسوم المالية والتقسيط: ${universityData.fees || 'غير متوفر حالياً'}
-                - قنوات التواصل والاتصال: ${universityData.contacts || 'غير متوفر حالياً'}
-                - التخصصات الأكاديمية والبرامج: ${universityData.majors || 'غير متوفر حالياً'}
+                أنت المساعد الأكاديمي الرقمي لجامعة القرآن الكريم - فرع غيل باوزير. أجب باختصار من البيانات المتاحة فقط:
+                التعريف: ${universityData.info || 'غير متوفر'}
+                الجداول: ${universityData.schedules || 'غير متوفر'}
+                الامتحانات: ${universityData.exams || 'غير متوفر'}
+                الرسوم: ${universityData.fees || 'غير متوفر'}
+                التواصل: ${universityData.contacts || 'غير متوفر'}
+                التخصصات: ${universityData.majors || 'غير متوفر'}
                 `;
 
+                // 2. الاتصال بـ Groq
+                step = "الاتصال بسيرفر Groq API";
                 const apiKey = process.env.GROQ_API_KEY;
                 if (!apiKey) {
-                    return res.json({ reply: "⚠️ عذراً، محرك الذكاء الاصطناعي (Groq) غير مفعل حالياً في الإعدادات." });
+                    return res.json({ reply: "⚠️ خطأ: مفتاح GROQ_API_KEY غير مضاف في Vercel." });
                 }
 
-                // الاتصال بـ Groq API وتشغيل نموذج Llama 3 8B
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -53,28 +48,38 @@ export default async function handler(req, res) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'llama3-8b-8192', // يمكنك كتابة 'llama3-70b-8192' إذا كنت تفضل النسخة الأكبر
+                        model: 'llama-3.1-8b-instant', 
                         messages: [
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: question }
                         ],
-                        temperature: 0.3, // درجة حرارة منخفضة لضمان الالتزام بالبيانات وعدم التأليف
+                        temperature: 0.3,
                         max_tokens: 800
                     })
                 });
 
-                const groqData = await groqResponse.json();
-                let reply = groqData.choices?.[0]?.message?.content;
+                step = "تحليل رد سيرفر Groq";
+                // التحقق من الحجب الجغرافي أو الرفض
+                if (groqResponse.status === 403 || groqResponse.status === 401) {
+                    return res.json({ reply: `⚠️ تم رفض الطلب من Groq (Status: ${groqResponse.status}). على الأرجح بسبب الحظر الجغرافي للمنطقة.` });
+                }
 
+                const groqData = await groqResponse.json();
+                
+                if (groqData.error) {
+                    return res.json({ reply: `⚠️ خطأ من Groq: ${groqData.error.message}` });
+                }
+
+                let reply = groqData.choices?.[0]?.message?.content;
                 if (!reply) {
-                    reply = "عذراً، واجه النظام صعوبة في معالجة الإجابة حالياً. يرجى المحاولة مجدداً.";
+                    return res.json({ reply: "عذراً، لم أتمكن من استخلاص الإجابة." });
                 }
 
                 return res.json({ reply: reply.trim() });
 
             } catch (error) {
-                console.error(error);
-                return res.json({ reply: "⚠️ عذراً، واجه السيرفر مشكلة أثناء الاتصال بمحرك الذكاء الاصطناعي." });
+                // هنا سيوضح لك النظام في أي خطوة انهار الكود بالضبط وما هو السبب
+                return res.json({ reply: `⚠️ فشل النظام عند خطوة [${step}]. السبب: ${error.message}` });
             }
         }
         
