@@ -32,13 +32,33 @@ function smartClassify(question) {
         return "majors";
     }
     
-    return null; // تعود بـ null لدمج السياق بالكامل إذا لم يحدد القسم
+    return "info"; // التغيير هنا: العودة بـ "info" كقيمة افتراضية للتسجيل بدلاً من null
+}
+
+// دالة تخزين السجلات وحفظ اللوغات في الـ Redis
+async function logQuestion(question, category) {
+    try {
+        const logEntry = {
+            question: question.trim(),
+            category: category,
+            timestamp: new Date().toISOString()
+        };
+        // دفع السجل إلى قائمة ثابتة بداخل Redis باسم chat_logs
+        await redis.lpush('chat_logs', JSON.stringify(logEntry));
+        // تقليم القائمة للحفاظ على آخر 1000 استفسار فقط من الطلاب
+        await redis.ltrim('chat_logs', 0, 999);
+    } catch (e) {
+        console.error("Failed to log question:", e);
+    }
 }
 
 export default async function handler(req, res) {
     // تعيين الرؤوس للاحترافية والأمان
     res.setHeader('Content-Type', 'application/json');
 
+    // ==========================================
+    // معالجة طلبات الـ POST (الأسئلة وحفظ البيانات)
+    // ==========================================
     if (req.method === 'POST') {
         const { password, question, ...data } = req.body;
 
@@ -61,14 +81,16 @@ export default async function handler(req, res) {
                 // تحميل بيانات الجامعة من السحابة
                 const universityData = await redis.get('university_data') || {};
                 
-                // تحديد الفئة وبناء السياق (Context Building) تماماً كالسيرفر الخاص بك
+                // تحديد الفئة وتسجيل السؤال فورياً بداخل الـ Logs
                 const category = smartClassify(question);
+                await logQuestion(question, category);
+                
                 let context = "";
 
                 if (category && universityData[category] && universityData[category].trim() !== "") {
                     context = universityData[category];
                 } else {
-                    // دمج الحقول المتاحة إذا لم يتم التعرف على الفئة أو الحقل المطلوب فارغ
+                    // دمج الحقول المتاحة إذا كان الحقل المطلوب فارغاً
                     context = Object.entries(universityData)
                         .filter(([_, value]) => value && value.trim() !== "")
                         .map(([key, value]) => `${key}: ${value}`)
@@ -98,7 +120,7 @@ ${context.substring(0, 2500)}
 
 [آلية الرد حسب نوع السؤال]
 1. سؤال عن جميع التخصصات: قدم قائمة بأسماء التخصصات فقط، بدون تفاصيل.
-2. سؤال عن تفاصيل تخصص محدد: (الرسوم: اذكر الرقم فقط | المدة: اذكر المدة فقط | الوصف: قدم وصفاً مختصراً من 2-3 جمل).
+2. سؤال عن تفاصيل تخصص حدد: (الرسوم: اذكر الرقم فقط | المدة: اذكر المدة فقط | الوصف: قدم وصفاً مختصراً من 2-3 جمل).
 3. أسئلة عن الرسوم، الامتحانات، الجداول، أو التواصل: استخرج المعلومة المطلوبة من القسم المناسب وأجب بها فقط.
 4. سؤال خارج نطاق الجامعة: قل: "أنا مختص بشؤون الجامعة فقط. كيف يمكنني مساعدتك في أمور الدراسة؟"
 5. شكر أو تحية: رد باختصار: "العفو"، "وعليكم السلام"، "في خدمتكم". لا تبدأ الرد بتحية جديدة.`;
@@ -121,7 +143,7 @@ ${context.substring(0, 2500)}
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: question.trim() }
                         ],
-                        temperature: 0.3, // نفس الـ Temperature الخاص بك للحفاظ على الاتزان والدقة
+                        temperature: 0.3,
                         max_tokens: 400
                     })
                 });
@@ -152,14 +174,43 @@ ${context.substring(0, 2500)}
     }
 
     // ==========================================
-    // 4. بوابة جلب البيانات (GET Method)
+    // 4. بوابة جلب البيانات والإحصائيات (GET Method)
     // ==========================================
     if (req.method === 'GET') {
         try {
-            const data = await redis.get('university_data');
-            return res.status(200).json(data || {});
+            // جلب بيانات الجامعة الأساسية
+            const data = await redis.get('university_data') || {};
+            
+            // سحب لوغات المحادثات من Redis لمعالجتها فورياً
+            const rawLogs = await redis.lrange('chat_logs', 0, -1) || [];
+            const logs = rawLogs.map(l => typeof l === 'string' ? JSON.parse(l) : l);
+            
+            // حساب إجمالي الاستفسارات
+            const totalQuestions = logs.length;
+            
+            // حساب استفسارات اليوم الحالي فقط
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayQuestions = logs.filter(l => l.timestamp && l.timestamp.startsWith(todayStr)).length;
+
+            // حساب الإحصائيات حسب الفئات (التصنيفات)
+            const categoryStats = {};
+            logs.forEach(l => {
+                const cat = l.category || 'info';
+                categoryStats[cat] = (categoryStats[cat] || 0) + 1;
+            });
+
+            // إرجاع كائن مدمج بالبيانات الرسمية والإحصائيات الخاصة بلوحة التحكم
+            return res.status(200).json({
+                university_data: data,
+                stats: {
+                    total: totalQuestions,
+                    today: todayQuestions,
+                    categories: categoryStats,
+                    latest_questions: logs.slice(0, 5) // مصفوفة تعرض آخر 5 أسئلة طرحها الطلاب
+                }
+            });
         } catch (error) {
-            return res.status(500).json({ error: 'فشل جلب البيانات من السحابة.' });
+            return res.status(500).json({ error: 'فشل جلب البيانات والتحليلات من السحابة.' });
         }
     }
 }
