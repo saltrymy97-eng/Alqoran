@@ -21,6 +21,7 @@ function App() {
 
     useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages]);
 
+    // 1. إرسال أسئلة الطلاب (متوافق مع السحابة)
     const sendMessage = async (text) => {
         if (!text || !text.trim() || loading) return;
         const q = text.trim();
@@ -41,11 +42,11 @@ function App() {
                 body: JSON.stringify({ question: q })
             });
             const data = await res.json();
-            const reply = data.reply || 'عذراً، حدث خطأ في معالجة الطلب.';
+            const reply = data.reply || 'عذراً، لا توجد معلومة محددة حول هذا الاستفسار حالياً.';
             setMessages(prev => [...prev, { role: 'bot', content: reply }]);
             speakText(reply);
         } catch (e) {
-            setMessages(prev => [...prev, { role: 'bot', content: '⚠️ خطأ في الاتصال بالخادم الرقمي.' }]);
+            setMessages(prev => [...prev, { role: 'bot', content: '⚠️ خطأ في الاتصال بالخادم الرقمي السحابي.' }]);
         }
         setLoading(false);
     };
@@ -94,6 +95,7 @@ function App() {
         }
     };
 
+    // 2. تسجيل دخول لوحة الإدارة (متوافق مع السحابة)
     const loginAdmin = async () => {
         const cleanedPass = adminPass.trim();
         if (!cleanedPass) return;
@@ -110,7 +112,7 @@ function App() {
             
             const data = await res.json();
             
-            if (res.ok) {
+            if (res.ok && data.success) {
                 setAdminLogged(true);
                 setAdminMsg('');
                 loadAdminData();
@@ -118,31 +120,42 @@ function App() {
                 setAdminMsg(data.error || '❌ كلمة مرور غير صحيحة');
             }
         } catch (error) {
-            setAdminMsg('⚠️ خطأ برمي في الاتصال بقاعدة البيانات الخلفية');
+            setAdminMsg('⚠️ خطأ برمجى في الاتصال بقاعدة البيانات السحابية');
         }
     };
 
+    // 3. قراءة البيانات المحدثة من السحابة لطلبها بالـ GET
     const loadAdminData = async () => {
-        const res = await fetch('/api/chat');
-        const data = await res.json();
-        setAdminData({
-            info: data.info || '',
-            schedules: data.schedules || '',
-            exams: data.exams || '',
-            fees: data.fees || '',
-            contacts: data.contacts || '',
-            majors: data.majors || ''
-        });
-        if (data.stats) setStats(data.stats);
+        try {
+            const res = await fetch('/api/chat');
+            const data = await res.json();
+            setAdminData({
+                info: data.info || '',
+                schedules: data.schedules || '',
+                exams: data.exams || '',
+                fees: data.fees || '',
+                contacts: data.contacts || '',
+                majors: data.majors || ''
+            });
+            if (data.stats) setStats(data.stats);
+        } catch(e) {
+            setAdminMsg('⚠️ فشل في جلب البيانات من السحابة');
+        }
     };
 
+    // 4. حفظ تعديلات الإدارة في السحابة
     const saveAdminData = async () => {
-        const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: adminPass.trim(), ...adminData })
-        });
-        setAdminMsg(res.ok ? '✅ تم حفظ وتحديث البيانات بنجاح' : '❌ خطأ في الحفظ');
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: adminPass.trim(), ...adminData })
+            });
+            const result = await res.json();
+            setAdminMsg(res.ok ? (result.message || '✅ تم حفظ وتحديث البيانات بنجاح') : '❌ خطأ في الحفظ');
+        } catch(e) {
+            setAdminMsg('❌ فشل الاتصال بالسيرفر أثناء الحفظ');
+        }
     };
 
     const quickActions = [
@@ -155,7 +168,7 @@ function App() {
     const fieldLabels = {
         info: '📋 التعريف العام بالفرع',
         schedules: '📚 إدارة الجداول الدراسية',
-        exams: '📝 إدارة المواعيد والامتحانات',
+        exams: '📝 إدارة Mواعيد والامتحانات',
         fees: '💰 شؤون الرسوم المالية',
         contacts: '📞 قنوات الاتصال والتواصل',
         majors: '🎓 التخصصات الأكاديمية والبرامج'
@@ -229,7 +242,7 @@ function App() {
         );
     }
 
-    // ========== ثانياً: لوحة التحكم الرقمية للادارة وحوكمة الإحصائيات والرسوم البيانية ==========
+    // ========== ثانياً: لوحة التحكم الرقمية للادارة ==========
     return React.createElement('div', { className: 'app-container admin-theme' },
         React.createElement('header', { className: 'main-header' },
             React.createElement('div', { className: 'basmala-text' }, 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'),
@@ -248,7 +261,7 @@ function App() {
                         value: adminPass,
                         onChange: e => setAdminPass(e.target.value),
                         onKeyPress: e => e.key === 'Enter' && loginAdmin(),
-                        style: { direction: 'ltr', textAlign: 'left' } /* ضمان إجبار الكتابة جهة اليسار برمجياً وهيكلياً */
+                        style: { direction: 'ltr', textAlign: 'left' }
                     }),
                     React.createElement('button', { className: 'admin-submit-btn', onClick: loginAdmin }, 'التحقق والصلاحية'),
                     adminMsg && React.createElement('p', { className: 'admin-status-msg error-color' }, adminMsg)
@@ -256,11 +269,9 @@ function App() {
             :
                 React.createElement('div', { className: 'admin-dashboard-layout' },
                     
-                    // =================== [ لوحة الإحصائيات المتقدمة، الفئات، والرسوم البيانية ] ===================
                     stats ? React.createElement('div', { className: 'analytics-panel' },
                         React.createElement('h3', { className: 'analytics-title' }, '📊 رصد الأداء الإحصائي وتحليل البيانات الفوري'),
                         
-                        /* عدادات البطاقات الرقمية المتجاوبة */
                         React.createElement('div', { className: 'analytics-grid' },
                             React.createElement('div', { className: 'analytic-box' }, 
                                 React.createElement('span', { className: 'analytic-big-icon' }, '💬'),
@@ -274,7 +285,6 @@ function App() {
                             )
                         ),
                         
-                        /* 1. نظام تصنيف وتقسيم الفئات الأكاديمية */
                         React.createElement('div', { className: 'categories-panel' },
                             React.createElement('h4', { className: 'categories-title' }, '🗂️ توزيع الاستفسارات حسب الفئات الأكاديمية:'),
                             React.createElement('div', { className: 'categories-list' },
@@ -295,7 +305,6 @@ function App() {
                             )
                         ),
 
-                        /* 2. الأسئلة الخمسة الأكثر تكراراً المدمجة بالرسم البياني الأفقي المرن */
                         stats.top && stats.top.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
                             React.createElement('h4', { className: 'top-queries-title' }, '🔝 الأسئلة الـ 5 الأكثر شيوعاً وطلباً (تحليل بياني):'),
                             
@@ -320,7 +329,6 @@ function App() {
                             )
                         ) : null
                     ) : null,
-                    // ==================================================================================
 
                     React.createElement('h2', { className: 'admin-section-title' }, '⚙️ تحديث قواعد البيانات الفورية للمساعد الذكي'),
                     React.createElement('div', { className: 'admin-inputs-grid' },
