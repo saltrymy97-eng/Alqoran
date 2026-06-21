@@ -22,8 +22,8 @@ function App() {
 
     useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages]);
 
-    // دالة إرسال الرسائل إلى السحابة
-    const sendMessage = async (text) => {
+    // دالة إرسال الرسائل إلى السحابة - معدلة لدعم منطق النطق الذكي والمنفصل
+    const sendMessage = async (text, shouldSpeak = false) => {
         if (!text || !text.trim() || loading) return;
         const q = text.trim();
 
@@ -46,33 +46,45 @@ function App() {
             const reply = data.reply || 'عذراً، لا توجد معلومة محددة حول هذا الاستفسار حالياً.';
             setMessages(prev => [...prev, { role: 'bot', content: reply }]);
             
-            // 🚫 تم إلغاء ميزة النطق التلقائي هنا لتصبح اختيارية عبر النقر على زر استمع فقط بناءً على رغبتك.
+            // 🎙️ ينطق أوتوماتيكياً فقط إذا جاء الطلب من الميكروفون (shouldSpeak === true)
+            if (shouldSpeak) {
+                speakText(reply);
+            }
         } catch (e) {
             setMessages(prev => [...prev, { role: 'bot', content: '⚠️ خطأ في الاتصال بالخادم الرقمي السحابي.' }]);
         }
         setLoading(false);
     };
 
-    // دالة نطق النص - مُحدثة بالكامل لتعمل بصوت رجل فصيح
+    // دالة نطق النص - مُحدثة لتعزيز اختيار طبقة صوت رجل فصيح وتعديل الحدة
     const speakText = (text) => {
         if (!window.speechSynthesis || !text) return;
         
-        // إيقاف أي قراءة صوتية جارية فوراً لمنع تراكب الأصوات
+        // إيقاف أي قراءة صوتية جارية فوراً لمنع التداخل
         window.speechSynthesis.cancel();
         
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'ar-SA';
-        u.rate = 1.0; // سرعة نطق طبيعية متزنة تليق بموظف استقبال
-        u.pitch = 1.0;
+        u.rate = 0.95; // سرعة متزنة ووقورة
+        u.pitch = 0.85; // تضخيم نبرة الصوت لتبدو أكثر رجولية كإجراء أمان مدمج
         
-        // جلب قائمة الأصوات المتاحة في نظام تشغيل الطالب وفلترة صوت رجل فصيح
+        // جلب قائمة الأصوات المتاحة في المتصفح والبحث الموسع عن اسم صوت رجل
         const voices = window.speechSynthesis.getVoices();
-        const maleVoice = voices.find(v => 
+        let maleVoice = voices.find(v => 
             v.lang.startsWith('ar') && 
-            (v.name.toLowerCase().includes('male') || v.name.includes('Naeem') || v.name.includes('Riyadh') || v.name.includes('Zayd'))
+            (v.name.toLowerCase().includes('male') || 
+             v.name.includes('Naeem') || 
+             v.name.includes('Riyadh') || 
+             v.name.includes('Zayd') || 
+             v.name.includes('Hamed') || 
+             v.name.includes('Maged'))
         );
         
-        // إذا لم يعثر على الصوت المخصص للرجل، يستخدم الصوت العربي الافتراضي المتوفر في الجهاز كبديل أمان
+        // إذا لم يعثر على اسم محدد صراحة للرجل، يفضل سحب محركات قوقل الفصيحة المدمجة
+        if (!maleVoice) {
+            maleVoice = voices.find(v => v.lang.startsWith('ar') && (v.name.includes('Natural') || v.name.includes('Google')));
+        }
+        
         if (maleVoice) {
             u.voice = maleVoice;
         } else {
@@ -112,7 +124,8 @@ function App() {
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             if (transcript && transcript.trim() !== "") {
-                sendMessage(transcript); // إرسال النص المستخرج فوراً كرسالة للذكاء الاصطناعي
+                // 🚀 تمرير القيمة true هنا ليقوم السيرفر بالنطق الصوتي التلقائي عند استخدام الميكروفون
+                sendMessage(transcript, true); 
             }
         };
 
@@ -226,7 +239,8 @@ function App() {
             
             React.createElement('div', { className: 'quick-actions-grid' },
                 quickActions.map((action, index) =>
-                    React.createElement('button', { key: index, className: 'action-premium-card', onClick: () => sendMessage(action.question) },
+                    // عند الضغط على الأزرار السريعة يكتفي بالكتابة فقط وصمت تلقائي للأمان المكتبي والإداري
+                    React.createElement('button', { key: index, className: 'action-premium-card', onClick: () => sendMessage(action.question, false) },
                         React.createElement('span', { className: 'card-icon' }, action.icon),
                         React.createElement('span', { className: 'card-label' }, action.label)
                     )
@@ -261,11 +275,12 @@ function App() {
                         className: 'chat-main-input',
                         value: input,
                         onChange: e => setInput(e.target.value),
-                        onKeyPress: e => e.key === 'Enter' && sendMessage(input),
+                        // عند الضغط على الـ Enter يكتفي بالكتابة فقط وصمت تلقائي للأمان المكتبي والإداري
+                        onKeyPress: e => e.key === 'Enter' && sendMessage(input, false),
                         placeholder: recording ? '🎙️ النظام يستمع لصوتك الآن...' : '✍️ اكتب استفسارك الأكاديمي هنا...',
                         disabled: loading || recording
                     }),
-                    React.createElement('button', { className: 'send-control-btn', onClick: () => sendMessage(input), disabled: loading || !input.trim() }, '◀')
+                    React.createElement('button', { className: 'send-control-btn', onClick: () => sendMessage(input, false), disabled: loading || !input.trim() }, '◀')
                 )
             ),
 
@@ -341,7 +356,6 @@ function App() {
                             )
                         ),
 
-                        // التعديل البياني الحقيقي هنا: عرض آخر 5 أسئلة طرحها الطلاب حياً من الـ Logs بدلاً من الحقول الفارغة السابقة
                         stats.latest_questions && stats.latest_questions.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
                             React.createElement('h4', { className: 'top-queries-title' }, '🔝 آخر 5 أسئلة تم طرحها من قبل الطلاب حالياً:'),
                             
