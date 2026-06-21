@@ -10,32 +10,34 @@
     --bg-light: #f8fafc;
 }
 
-/* ---------------- الإعدادات العامة للمتصفح ---------------- */
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
+/* ---------------- [إصلاح وإلغاء الفراغ العلوي نهائياً] ---------------- */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    background-color: var(--bg-light);
 }
 
 body { 
-    background-color: var(--bg-light); 
     color: var(--dark-slate); 
     direction: rtl; 
-    padding: 20px 15px; 
     display: flex; 
     justify-content: center; 
+    align-items: flex-start; /* يبدأ التموضع من أعلى نقطة في الشاشة */
     font-family: 'Tajawal', sans-serif; 
     -webkit-font-smoothing: antialiased;
+    padding-top: 0 !important; /* تصفير الحشوة العلوية قسرياً */
 }
 
-/* الحاوية الرئيسية للنظام */
+/* الحاوية الرئيسية للنظام - إغلاق الفراغات */
 .app-container { 
     width: 100%; 
     max-width: 540px; 
     background: var(--pure-white); 
     padding: 25px 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+    border-radius: 0 0 16px 16px; /* زوايا دائرية من الأسفل فقط لإلغاء فراغ الأعلى */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    margin-top: 0 !important;
 }
 
 /* ---------------- الهيدر الأكاديمي الفخم ---------------- */
@@ -44,6 +46,7 @@ body {
     position: relative; 
     padding-bottom: 25px; 
     margin-bottom: 20px; 
+    padding-top: 10px; /* مسافة داخلية صغيرة جداً وراقية مظهرها متناسق */
 }
 
 /* خط تزييني ذهبي متلاشي أسفل الهيدر */
@@ -144,7 +147,6 @@ body {
     border-bottom: none; 
 }
 
-/* حركات انسيابية فاخرة عند التمرير */
 .action-premium-card:hover { 
     transform: translateX(-6px); 
 }
@@ -188,7 +190,6 @@ body {
     font-weight: 700;
 }
 
-/* مؤشر النبض الحي الأكاديمي */
 .pulse-live-indicator {
     width: 8px;
     height: 8px;
@@ -205,7 +206,6 @@ body {
     100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-/* مساحة عرض الرسائل */
 .chat-viewport { 
     height: 340px; 
     overflow-y: auto; 
@@ -234,7 +234,6 @@ body {
     line-height: 1.65;
 }
 
-/* فقاعة الرد الذكي للجامعة */
 .premium-bot-bubble { 
     background: rgba(8, 61, 43, 0.03); 
     border-right: 3px solid var(--royal-green); 
@@ -243,7 +242,6 @@ body {
     border-radius: 12px 0 12px 12px; 
 }
 
-/* فقاعة مدخلات الطالب */
 .premium-user-bubble { 
     background: rgba(197, 160, 89, 0.08); 
     border-left: 3px solid var(--luxury-gold); 
@@ -253,7 +251,6 @@ body {
     font-weight: 500; 
 }
 
-/* زر النطق الصوتي الفاخر */
 .audio-trigger {
     background: transparent;
     border: none;
@@ -268,7 +265,6 @@ body {
 }
 .audio-trigger:hover { color: var(--royal-green); }
 
-/* تأثير حالة جاري التحليل */
 .loading-state {
     color: #64748b;
     font-style: italic;
@@ -300,7 +296,6 @@ body {
     color: var(--dark-slate); 
 }
 
-/* تحسين المايك والزر الدائري */
 .mic-control-btn {
     background: transparent;
     border: none;
@@ -350,7 +345,6 @@ body {
     margin-top: 25px; 
 }
 
-/* صندوق تسجيل الدخول السري للحوكمة */
 .login-secure-box { 
     display: flex; 
     flex-direction: column; 
@@ -360,6 +354,7 @@ body {
     text-align: center; 
 }
 
+/* تحسين حقل الباسورد وحظر المشاكل الإملائية */
 .admin-password-input { 
     width: 100%; 
     padding: 14px 20px; 
@@ -371,6 +366,7 @@ body {
     text-align: center; 
     color: var(--dark-slate);
     transition: all 0.3s;
+    direction: ltr; /* الكتابة من اليسار لليمين مخصصة لكلمة المرور الإدارية */
 }
 .admin-password-input:focus { 
     border-color: var(--royal-green); 
@@ -394,12 +390,133 @@ body {
     transform: translateY(-2px); 
 }
 
-/* الهيكل الداخلي للمدخلات وبصمة النظام */
 .admin-dashboard-layout { 
     display: flex; 
     flex-direction: column; 
     gap: 25px; 
 }
+
+/* =================== [تطوير قسم هندسة لوحة الإحصائيات المتقدمة الفاخرة] =================== */
+.analytics-panel { 
+    margin-top: 15px; 
+    border: 1px solid #e2e8f0; 
+    background: #ffffff;
+    padding: 20px; 
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+}
+
+.analytics-title { 
+    font-family: 'Amiri', serif; 
+    font-size: 1.2rem; 
+    color: var(--royal-green); 
+    margin-bottom: 16px; 
+    font-weight: 700;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.analytics-grid { 
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* عمودين متساويين ومتجاوبين */
+    gap: 14px; 
+    margin-bottom: 20px;
+}
+
+.analytic-box { 
+    background: #f8fafc; 
+    border: 1px solid #f1f5f9;
+    padding: 16px; 
+    border-radius: 12px; 
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+.analytic-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(197, 160, 89, 0.3);
+}
+
+.analytic-big-icon {
+    font-size: 1.6rem;
+}
+
+.analytic-number { 
+    display: block; 
+    font-size: 1.85rem; 
+    font-weight: 800; 
+    color: var(--royal-green); 
+    line-height: 1;
+}
+
+.analytic-label { 
+    font-size: 0.84rem; 
+    color: #64748b; 
+    font-weight: 500;
+}
+
+/* رصد قائمة الأسئلة الـ 5 الأكثر شيوعاً وتكراراً من الطلاب */
+.top-queries-container {
+    margin-top: 18px;
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 16px;
+}
+.top-queries-title {
+    font-size: 0.92rem;
+    color: #b45309; /* ذهبي غامق ملكي للتحذيرات والمؤشرات */
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.top-queries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.top-query-row {
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+}
+.query-rank {
+    background: var(--luxury-gold);
+    color: #ffffff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-left: 12px;
+}
+.query-text {
+    flex: 1;
+    color: var(--dark-slate);
+    text-align: right;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* قص الأسئلة الطويلة جداً بشكل جمالي */
+}
+.query-counter-badge {
+    background: rgba(8, 61, 43, 0.06);
+    color: var(--royal-green);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+/* =================================================================== */
 
 .admin-inputs-grid { 
     display: flex; 
@@ -440,7 +557,6 @@ body {
     box-shadow: 0 4px 12px rgba(197, 160, 89, 0.05);
 }
 
-/* شريط الحفظ الفوري للبيانات */
 .admin-action-bar { 
     margin-top: 10px; 
     text-align: center; 
@@ -469,7 +585,7 @@ body {
     padding: 11px; 
     border-radius: 10px; 
     cursor: pointer; 
-    margin-top: 15px; 
+    margin-top: 5px; 
     font-size: 0.92rem;
     font-weight: 600;
     transition: all 0.3s;
@@ -480,49 +596,6 @@ body {
     border-color: #fca5a5; 
 }
 
-/* لوحة القياس الفورية للإحصائيات */
-.analytics-panel { 
-    margin-top: 30px; 
-    border-top: 1px dashed rgba(197, 160, 89, 0.3); 
-    padding-top: 20px; 
-}
-
-.analytics-title { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.25rem; 
-    color: var(--royal-green); 
-    margin-bottom: 15px; 
-    font-weight: 700;
-}
-
-.analytics-grid { 
-    display: flex; 
-    gap: 15px; 
-}
-
-.analytic-box { 
-    flex: 1; 
-    background: rgba(197, 160, 89, 0.04); 
-    padding: 16px; 
-    border-radius: 10px; 
-    text-align: center; 
-}
-
-.analytic-number { 
-    display: block; 
-    font-size: 1.65rem; 
-    font-weight: 800; 
-    color: var(--royal-green); 
-}
-
-.analytic-label { 
-    font-size: 0.82rem; 
-    color: #64748b; 
-    margin-top: 6px; 
-    display: block; 
-}
-
-/* رسائل الحالات البرمجية */
 .admin-status-msg { 
     font-size: 0.92rem; 
     font-weight: 600; 
