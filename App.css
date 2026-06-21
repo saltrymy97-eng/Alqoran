@@ -1,558 +1,429 @@
-/* ---------------- استيراد الخطوط الرسمية ---------------- */
+/* -------------------------------------------------------------
+   الملف التنسيقي الشامل لنظام جامعة القرآن الكريم والعلوم الإسلامية
+   تطوير النظم الرقمية: سالم التريمي
+   ------------------------------------------------------------- */
+
+/* استيراد الخطوط الفاخرة للأصالة والحداثة */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap');
 
-/* ---------------- المتغيرات اللونية الملكية ---------------- */
+/* المتغيرات اللونية المعتمدة في الهوية البصرية للنظام */
 :root {
-    --royal-green: #083d2b;   /* أخضر جامعي ملكي */
-    --luxury-gold: #c5a059;   /* ذهبي راقٍ ومطفأ */
-    --dark-slate: #1e293b;    /* لون النصوص الأساسية */
-    --pure-white: #ffffff;    /* الخلفية النظيفة */
-    --bg-light: #f8fafc;
+    --primary-green: #084d2b;       /* الأخضر الجامعي الرسمي */
+    --secondary-gold: #c5a059;      /* الذهبي الملكي للآيات والعناوين */
+    --dark-gold: #b45309;           /* ذهبي داكن للنصوص الملونة */
+    --light-gold-bg: #fef3c7;       /* خلفية الشارات الذهبية الفاتحة */
+    --text-main: #1e293b;           /* لون النصوص الأساسي */
+    --text-muted: #64748b;          /* لون النصوص الفرعية والتوضيحية */
+    --bg-app: #f8fafc;              /* خلفية التطبيق العامة */
+    --card-bg: #ffffff;             /* خلفية البطاقات البيضاء */
+    --border-color: #f1f5f9;         /* لون الحدود الانسيابية الفاتحة */
+    --error-red: #dc2626;           /* أحمر التحذيرات والأخطاء */
 }
 
-/* ---------------- الإعدادات العامة للمتصفح ---------------- */
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
-}
-
-body { 
-    background-color: var(--bg-light); 
-    color: var(--dark-slate); 
-    direction: rtl; 
-    padding: 20px 15px; 
-    display: flex; 
-    justify-content: center; 
-    font-family: 'Tajawal', sans-serif; 
+/* الإعدادات العامة لتهيئة المتصفح وضمان التجاوب */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Tajawal', sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 
-/* الحاوية الرئيسية للنظام */
-.app-container { 
-    width: 100%; 
-    max-width: 540px; 
-    background: var(--pure-white); 
-    padding: 25px 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
-}
-
-/* ---------------- الهيدر الأكاديمي الفخم ---------------- */
-.main-header { 
-    text-align: center; 
-    position: relative; 
-    padding-bottom: 25px; 
-    margin-bottom: 20px; 
-}
-
-/* خط تزييني ذهبي متلاشي أسفل الهيدر */
-.main-header::after { 
-    content: ''; 
-    position: absolute; 
-    bottom: 0; 
-    left: 15%; 
-    right: 15%; 
-    height: 1px; 
-    background: linear-gradient(90deg, transparent, var(--luxury-gold), transparent); 
-    opacity: 0.6; 
-}
-
-.basmala-text { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.35rem; 
-    color: var(--royal-green); 
-    margin-bottom: 12px; 
-    letter-spacing: 0.5px; 
-}
-
-.university-name { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.85rem; 
-    font-weight: 700; 
-    color: var(--royal-green); 
-    line-height: 1.3; 
-}
-
-.branch-badge { 
-    font-size: 0.95rem; 
-    color: var(--luxury-gold); 
-    margin-top: 8px; 
-    font-weight: 600; 
-    letter-spacing: 0.3px;
-}
-
-/* ---------------- الآية القرآنية الكريمة ---------------- */
-.verse-wrapper {
+body {
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    direction: rtl;
     display: flex;
     justify-content: center;
-    margin: 30px 0;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 12px;
 }
 
-.quranic-verse { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.55rem; 
-    color: var(--luxury-gold); 
-    text-align: center; 
-    line-height: 1.8; 
-    padding: 5px 15px;
-}
-
-/* ---------------- عناوين الأقسام (الماسة الذهبية) ---------------- */
-.section-title-divider { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.3rem; 
-    color: var(--royal-green); 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    margin: 35px 0 15px 0; 
-    font-weight: 700;
-}
-
-.section-title-divider::before { 
-    content: ''; 
-    display: inline-block; 
-    width: 6px; 
-    height: 6px; 
-    background-color: var(--luxury-gold); 
-    transform: rotate(45deg); 
-}
-
-/* ---------------- قائمة الخدمات السريعة (بدون مربعات) ---------------- */
-.quick-actions-grid { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 0; 
-}
-
-.action-premium-card { 
-    background: transparent; 
-    border: none; 
-    padding: 18px 5px; 
-    display: flex; 
-    align-items: center; 
-    gap: 15px; 
-    cursor: pointer; 
+/* الحاوية الرئيسية للهاتف المحمول (Responsive App Wrapper) */
+.app-container {
     width: 100%;
-    text-align: right;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.12);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.action-premium-card:last-child { 
-    border-bottom: none; 
-}
-
-/* حركات انسيابية فاخرة عند التمرير */
-.action-premium-card:hover { 
-    transform: translateX(-6px); 
-}
-
-.action-premium-card:hover .card-label { 
-    color: var(--luxury-gold); 
-}
-
-.action-premium-card:hover .card-icon { 
-    transform: scale(1.12); 
-}
-
-.card-icon { 
-    font-size: 1.35rem; 
+    max-width: 480px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
+    padding: 24px 20px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.35s; 
-}
-
-.card-label { 
-    font-size: 1.02rem; 
-    font-weight: 500; 
-    color: var(--dark-slate); 
-    transition: color 0.35s; 
-}
-
-/* ---------------- المساعد الذكي التفاعلي ---------------- */
-.chat-dashboard { 
-    margin-top: 40px; 
-}
-
-.chat-dashboard-header { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.25rem; 
-    color: var(--royal-green); 
-    margin-bottom: 15px; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    font-weight: 700;
-}
-
-/* مؤشر النبض الحي الأكاديمي */
-.pulse-live-indicator {
-    width: 8px;
-    height: 8px;
-    background-color: #10b981;
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-    animation: pulse 1.6s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
-    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-/* مساحة عرض الرسائل */
-.chat-viewport { 
-    height: 340px; 
-    overflow-y: auto; 
-    padding: 10px 5px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 16px; 
-    scrollbar-width: thin; 
-    scrollbar-color: rgba(197, 160, 89, 0.3) transparent; 
-}
-
-.msg-bubble-wrapper {
-    display: flex;
-    width: 100%;
-}
-.user-align { justify-content: flex-end; }
-.bot-align { justify-content: flex-start; }
-
-.msg-bubble {
-    max-width: 88%;
+    flex-direction: column;
+    gap: 20px;
     position: relative;
+    overflow: hidden;
 }
 
-.msg-text {
-    font-size: 0.96rem;
-    line-height: 1.65;
-}
-
-/* فقاعة الرد الذكي للجامعة */
-.premium-bot-bubble { 
-    background: rgba(8, 61, 43, 0.03); 
-    border-right: 3px solid var(--royal-green); 
-    color: var(--dark-slate); 
-    padding: 14px 18px; 
-    border-radius: 12px 0 12px 12px; 
-}
-
-/* فقاعة مدخلات الطالب */
-.premium-user-bubble { 
-    background: rgba(197, 160, 89, 0.08); 
-    border-left: 3px solid var(--luxury-gold); 
-    color: var(--royal-green); 
-    padding: 14px 18px; 
-    border-radius: 0 12px 12px 12px; 
-    font-weight: 500; 
-}
-
-/* زر النطق الصوتي الفاخر */
-.audio-trigger {
-    background: transparent;
-    border: none;
-    color: var(--luxury-gold);
-    font-size: 0.8rem;
-    cursor: pointer;
-    margin-top: 8px;
+/* ---------------- الهيدر الأكاديمي الشريف ---------------- */
+.app-header {
+    text-align: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 4px;
-    font-weight: 600;
+    gap: 6px;
+    margin-bottom: 5px;
 }
-.audio-trigger:hover { color: var(--royal-green); }
 
-/* تأثير حالة جاري التحليل */
-.loading-state {
-    color: #64748b;
-    font-style: italic;
+.basmala {
+    font-family: 'Amiri', serif;
+    font-size: 1.45rem;
+    color: var(--primary-green);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.univ-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    line-height: 1.4;
+}
+
+/* شارة الفرع الفاخرة (البيضوية الفاتحة) */
+.branch-badge {
+    background-color: var(--light-gold-bg);
+    color: var(--dark-gold);
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+/* الآية القرآنية الكريمة المذهبة */
+.quran-verse {
+    font-family: 'Amiri', serif;
+    font-size: 1.6rem;
+    color: var(--secondary-gold);
+    text-align: center;
+    font-weight: bold;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+/* عنوان الأقسام (الخدمات الأكاديمية السريعة) */
+.section-headline {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* ---------------- حقل الإدخال VIP (بيضاوي انسيابي) ---------------- */
-.chat-control-panel { 
-    display: flex; 
-    gap: 10px; 
-    margin-top: 22px; 
-    padding: 5px 6px 5px 12px; 
-    background: var(--pure-white); 
-    border-radius: 40px; 
-    box-shadow: 0 10px 30px rgba(197, 160, 89, 0.08); 
-    border: 1px solid rgba(197, 160, 89, 0.22); 
-    align-items: center;
+.section-headline::before {
+    content: "🔸";
+    font-size: 0.85rem;
 }
 
-.chat-main-input { 
-    flex: 1; 
-    border: none; 
-    padding: 10px 8px; 
-    outline: none; 
-    background: transparent; 
-    font-size: 0.96rem; 
-    color: var(--dark-slate); 
+/* ---------------- نمط 1: شبكة الخدمات (Grid Layout) ---------------- */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
 
-/* تحسين المايك والزر الدائري */
-.mic-control-btn {
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
+.service-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
     cursor: pointer;
-    padding: 0 5px;
-    transition: transform 0.2s;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
 }
-.mic-control-btn:hover { transform: scale(1.1); }
-.is-recording-active { animation: pulse-mic 1s infinite alternate; color: #ef4444; }
 
-@keyframes pulse-mic { from { opacity: 0.5; } to { opacity: 1; } }
+.service-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(8, 77, 43, 0.06);
+    border-color: rgba(197, 160, 89, 0.3);
+}
 
-.send-control-btn { 
-    background: var(--royal-green); 
-    color: var(--pure-white); 
-    border: none; 
-    width: 42px; 
-    height: 42px; 
-    border-radius: 50%; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    transition: all 0.3s ease; 
+.service-icon {
+    font-size: 1.8rem;
+}
+
+.service-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+/* ---------------- نمط 2: قائمة الخدمات الممتدة (List Layout) ---------------- */
+.services-list {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--border-color);
+}
+
+.service-list-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.service-list-row:hover {
+    background-color: #f8fafc;
+}
+
+.service-list-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-green);
+}
+
+.arrow-left-icon {
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
-.send-control-btn:hover:not(:disabled) { 
-    transform: scale(1.05); 
-    background: var(--luxury-gold); 
-}
-.send-control-btn:disabled {
-    background: #cbd5e1;
-    cursor: not-allowed;
+
+/* ---------------- المساعد الذكي التفاعلي ---------------- */
+.bot-section {
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
 }
 
-/* ---------------- لوحة التحكم الرقمية للإشراف (الإدارة) ---------------- */
-.admin-theme { 
-    background-color: var(--pure-white); 
-}
-.branch-badge.admin { 
-    color: #991b1b; 
-    font-weight: 700; 
-}
-
-.admin-main-card { 
-    margin-top: 25px; 
-}
-
-/* صندوق تسجيل الدخول السري للحوكمة */
-.login-secure-box { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 18px; 
-    max-width: 380px; 
-    margin: 40px auto; 
-    text-align: center; 
-}
-
-.admin-password-input { 
-    width: 100%; 
-    padding: 14px 20px; 
-    border-radius: 40px; 
-    border: 1px solid rgba(197, 160, 89, 0.3); 
-    background: #f8fafc; 
-    outline: none; 
-    font-size: 1rem; 
-    text-align: center; 
-    color: var(--dark-slate);
-    transition: all 0.3s;
-}
-.admin-password-input:focus { 
-    border-color: var(--royal-green); 
-    background: var(--pure-white); 
-    box-shadow: 0 4px 15px rgba(8, 61, 43, 0.05);
-}
-
-.admin-submit-btn { 
-    background: var(--royal-green); 
-    color: var(--pure-white); 
-    border: none; 
-    padding: 14px; 
-    border-radius: 40px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    font-size: 1rem; 
-    transition: all 0.3s; 
-}
-.admin-submit-btn:hover { 
-    background: var(--luxury-gold); 
-    transform: translateY(-2px); 
-}
-
-/* الهيكل الداخلي للمدخلات وبصمة النظام */
-.admin-dashboard-layout { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 25px; 
-}
-
-.admin-inputs-grid { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 22px; 
-}
-
-.input-group-wrapper { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 8px; 
-}
-
-.admin-field-label { 
-    font-size: 0.95rem; 
-    font-weight: 700; 
-    color: var(--royal-green); 
-    padding-right: 2px; 
-}
-
-.admin-styled-textarea { 
-    width: 100%; 
-    padding: 14px; 
-    border-radius: 10px; 
-    border: 1px solid #e2e8f0; 
-    background: #f8fafc; 
-    resize: vertical; 
-    outline: none; 
-    font-size: 0.96rem; 
-    font-family: 'Tajawal', sans-serif;
-    line-height: 1.65;
-    color: var(--dark-slate);
-    transition: all 0.3s;
-}
-.admin-styled-textarea:focus { 
-    border-color: var(--luxury-gold); 
-    background: var(--pure-white); 
-    box-shadow: 0 4px 12px rgba(197, 160, 89, 0.05);
-}
-
-/* شريط الحفظ الفوري للبيانات */
-.admin-action-bar { 
-    margin-top: 10px; 
-    text-align: center; 
-}
-
-.admin-save-btn { 
-    width: 100%; 
-    background: var(--royal-green); 
-    color: var(--pure-white); 
-    border: none; 
-    padding: 15px; 
-    border-radius: 10px; 
-    font-weight: 700; 
-    cursor: pointer; 
-    font-size: 1rem;
-    transition: background 0.3s;
-}
-.admin-save-btn:hover { 
-    background: #04261b; 
-}
-
-.admin-exit-btn { 
-    background: transparent; 
-    color: #64748b; 
-    border: 1px solid #e2e8f0; 
-    padding: 11px; 
-    border-radius: 10px; 
-    cursor: pointer; 
-    margin-top: 15px; 
-    font-size: 0.92rem;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-.admin-exit-btn:hover { 
-    background: #fee2e2; 
-    color: #991b1b; 
-    border-color: #fca5a5; 
-}
-
-/* لوحة القياس الفورية للإحصائيات */
-.analytics-panel { 
-    margin-top: 30px; 
-    border-top: 1px dashed rgba(197, 160, 89, 0.3); 
-    padding-top: 20px; 
-}
-
-.analytics-title { 
-    font-family: 'Amiri', serif; 
-    font-size: 1.25rem; 
-    color: var(--royal-green); 
-    margin-bottom: 15px; 
+.bot-header-bar {
+    background-color: var(--primary-green);
+    color: var(--white);
+    padding: 12px 16px;
     font-weight: 700;
+    font-size: 0.98rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.analytics-grid { 
-    display: flex; 
-    gap: 15px; 
+/* مؤشر البث الحي النبّاض */
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: livePulse 1.5s infinite;
 }
 
-.analytic-box { 
-    flex: 1; 
-    background: rgba(197, 160, 89, 0.04); 
-    padding: 16px; 
-    border-radius: 10px; 
-    text-align: center; 
+@keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-.analytic-number { 
-    display: block; 
-    font-size: 1.65rem; 
-    font-weight: 800; 
-    color: var(--royal-green); 
+.bot-body {
+    background-color: #fdfdfd;
+    padding: 16px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px;
 }
 
-.analytic-label { 
-    font-size: 0.82rem; 
-    color: #64748b; 
-    margin-top: 6px; 
-    display: block; 
+/* فقاعة رد المساعد (الخيار الداكن والخيار الفاتح بحسب التصاميم المرصودة) */
+.bot-bubble-dark {
+    background-color: var(--primary-green);
+    color: #ffffff;
+    padding: 14px 16px;
+    border-radius: 12px 0px 12px 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
-/* رسائل الحالات البرمجية */
-.admin-status-msg { 
-    font-size: 0.92rem; 
-    font-weight: 600; 
-    margin-top: 12px; 
-    text-align: center; 
-}
-.error-color { color: #b91c1c; }
-.success-color { color: #15803d; }
-
-/* ---------------- الفوتر (بصمة المهندس المطوّر) ---------------- */
-.premium-footer { 
-    text-align: center; 
-    margin-top: 45px; 
-    padding-top: 20px; 
-    border-top: 1px dashed rgba(197, 160, 89, 0.25); 
+.bot-bubble-light {
+    background-color: #f1f5f9;
+    color: var(--text-main);
+    padding: 14px 16px;
+    border-radius: 12px 0px 12px 12px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    border-right: 4px solid var(--primary-green);
 }
 
-.copyrights {
-    font-size: 0.8rem; 
-    color: #94a3b8;
-    margin-bottom: 6px;
-}
-
-.developer-tag {
-    font-family: 'Tajawal', sans-serif;
+/* زر الاستماع الصوتي الدبلوماسي */
+.listen-btn {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 5px 12px;
+    border-radius: 8px;
     font-size: 0.85rem;
-    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
-.developer-tag strong {
-    color: var(--royal-green);
+.listen-btn:hover {
+    background-color: var(--bg-app);
+}
+
+/* حقل إدخال الرسائل والميكروفون البيضاوي المتكامل */
+.input-wrapper-pill {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 30px;
+    padding: 4px 4px 4px 8px;
+    gap: 8px;
+}
+
+.bot-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: transparent;
+}
+
+.mic-btn-container {
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.send-btn-circle {
+    background-color: var(--primary-green);
+    color: #ffffff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.send-btn-circle:hover {
+    background-color: var(--secondary-gold);
+}
+
+/* ---------------- بوابة الإشراف والحوكمة (Admin) ---------------- */
+.admin-gate-title {
+    font-family: 'Amiri', serif;
+    font-size: 1.55rem;
+    font-weight: bold;
+    color: var(--primary-green);
+    margin-top: 10px;
+}
+
+.sub-gate-title {
+    color: var(--error-red);
+    font-size: 0.95rem;
     font-weight: 700;
+    margin-top: -4px;
+}
+
+.secure-login-box {
+    text-align: center;
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.secure-label {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.admin-input-pass {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid rgba(195, 160, 89, 0.4);
+    border-radius: 25px;
+    outline: none;
+    font-size: 1.1rem;
+    text-align: center;
+    letter-spacing: 3px;
+    background-color: #fafafa;
+    transition: border 0.2s;
+}
+
+.admin-input-pass:focus {
+    border-color: var(--primary-green);
+    background-color: #ffffff;
+}
+
+.admin-auth-btn {
+    background-color: var(--secondary-gold);
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.admin-auth-btn:hover {
+    background-color: var(--primary-green);
+}
+
+/* رسالة الخطأ المتوافقة مع الرمز X */
+.error-message-box {
+    color: var(--error-red);
+    font-size: 0.92rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+/* ---------------- الفوتر الرسمي للمشروع ---------------- */
+.app-footer {
+    text-align: center;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.dev-signature {
+    font-size: 0.85rem;
+    color: #475569;
+    margin-top: 4px;
+}
+
+.dev-signature span {
+    color: var(--primary-green);
+    font-weight: 800;
 }
