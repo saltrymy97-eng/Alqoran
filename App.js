@@ -247,7 +247,8 @@ function App() {
                         placeholder: 'أدخل كلمة مرور النظام المشفرة',
                         value: adminPass,
                         onChange: e => setAdminPass(e.target.value),
-                        onKeyPress: e => e.key === 'Enter' && loginAdmin()
+                        onKeyPress: e => e.key === 'Enter' && loginAdmin(),
+                        style: { direction: 'ltr', textAlign: 'left' } /* ضمان إجبار الكتابة جهة اليسار برمجياً وهيكلياً */
                     }),
                     React.createElement('button', { className: 'admin-submit-btn', onClick: loginAdmin }, 'التحقق والصلاحية'),
                     adminMsg && React.createElement('p', { className: 'admin-status-msg error-color' }, adminMsg)
