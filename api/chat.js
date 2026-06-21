@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
         // لوحة الإدارة
         if (password) {
-            if (password !== process.env.ADMIN_PASSWORD) return res.status(403).json({ error: 'كلمة مرور غير صحيحة' });
+            if (password !== 'admin123') return res.status(403).json({ error: 'كلمة مرور غير صحيحة' });
             saveData({ info, schedules, exams, fees, contacts, majors });
             return res.json({ success: true });
         }
