@@ -580,25 +580,30 @@ body {
     transition: width 1s ease-out;
 }
 
-/* ---------------- مدخلات لوحة الإدارة ---------------- */
+/* ---------------- مدخلات لوحة الإدارة (تمت معالجة التداخل الهاتفي هنا) ---------------- */
 .admin-inputs-grid { 
     display: flex; 
     flex-direction: column; 
-    gap: 22px; 
+    gap: 25px; /* زيادة الفجوة بين المجموعات لمنع التراكب */
     width: 100%;
+    box-sizing: border-box;
 }
 
 .input-group-wrapper { 
     display: flex; 
     flex-direction: column; 
-    gap: 8px; 
+    gap: 10px; /* تباعد كافٍ بين العنوان والصندوق نفسه */
     width: 100%;
+    margin-bottom: 5px; /* تأمين مسافة أمان سفلية */
+    box-sizing: border-box;
 }
 
 .admin-field-label { 
     font-size: 0.95rem; 
     font-weight: 700; 
     color: var(--royal-green); 
+    text-align: right;
+    display: block;
 }
 
 .admin-styled-textarea { 
@@ -614,6 +619,7 @@ body {
     font-family: 'Tajawal', sans-serif;
     line-height: 1.65;
     color: var(--dark-slate);
+    display: block;
 }
 
 .admin-styled-textarea:focus { 
@@ -622,7 +628,7 @@ body {
 }
 
 .admin-action-bar { 
-    margin-top: 10px; 
+    margin-top: 15px; 
     text-align: center; 
     width: 100%;
 }
@@ -646,7 +652,7 @@ body {
     padding: 11px; 
     border-radius: 10px; 
     cursor: pointer; 
-    margin-top: 5px; 
+    margin-top: 10px; 
     font-size: 0.92rem;
     font-weight: 600;
     width: 100%;
