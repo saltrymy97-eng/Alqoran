@@ -88,19 +88,32 @@ function App() {
         }
     };
 
+    /* ===== [تعديل واصلاح دالة تسجيل الدخول لتتوافق مع الخادم الخلفي] ===== */
     const loginAdmin = async () => {
-        if (!adminPass.trim()) return;
-        const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: adminPass })
-        });
-        if (res.ok) {
-            setAdminLogged(true);
-            setAdminMsg('');
-            loadAdminData();
-        } else {
-            setAdminMsg('❌ كلمة مرور غير صحيحة');
+        const cleanedPass = adminPass.trim(); // تنظيف كلمة المرور من المسافات فوراً
+        if (!cleanedPass) return;
+        
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ password: cleanedPass })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok) {
+                setAdminLogged(true);
+                setAdminMsg('');
+                loadAdminData();
+            } else {
+                setAdminMsg(data.error || '❌ كلمة مرور غير صحيحة');
+            }
+        } catch (error) {
+            setAdminMsg('⚠️ خطأ برمي في الاتصال بقاعدة البيانات الخلفية');
         }
     };
 
@@ -122,7 +135,7 @@ function App() {
         const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: adminPass, ...adminData })
+            body: JSON.stringify({ password: adminPass.trim(), ...adminData })
         });
         setAdminMsg(res.ok ? '✅ تم حفظ وتحديث البيانات بنجاح' : '❌ خطأ في الحفظ');
     };
@@ -229,7 +242,7 @@ function App() {
                         placeholder: 'أدخل كلمة مرور النظام المشفرة',
                         value: adminPass,
                         onChange: e => setAdminPass(e.target.value),
-                        onKeyPress: e => e.key === 'Enter' && loginAdmin() // ميزة الدخول عبر زر Enter
+                        onKeyPress: e => e.key === 'Enter' && loginAdmin()
                     }),
                     React.createElement('button', { className: 'admin-submit-btn', onClick: loginAdmin }, 'التحقق والصلاحية'),
                     adminMsg && React.createElement('p', { className: 'admin-status-msg error-color' }, adminMsg)
