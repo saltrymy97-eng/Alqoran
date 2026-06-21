@@ -74,14 +74,25 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
         const { question, password, info, schedules, exams, fees, contacts, majors } = req.body;
 
-        // لوحة الإدارة
-        if (password) {
-            if (password !== 'admin123') return res.status(403).json({ error: 'كلمة مرور غير صحيحة' });
-            saveData({ info, schedules, exams, fees, contacts, majors });
-            return res.json({ success: true });
+        // ========== [إصلاح حوكمة لوحة الإدارة والتحقق الحصري] ==========
+        if (password !== undefined) {
+            // 1. التحقق من صحة الكلمة السرية تنظيفاً للمسافات
+            if (password.trim() !== 'admin123') {
+                return res.status(403).json({ error: '❌ كلمة مرور غير صحيحة' });
+            }
+            
+            // 2. فحص نوع الطلب: هل هو "حفظ وتحديث" أم "مجرد تسجيل دخول"؟
+            // إذا كانت الحقول قادمة (أي أن أحدها على الأقل ليس undefined) نقوم بحفظ البيانات
+            if (info !== undefined || schedules !== undefined || exams !== undefined || fees !== undefined || contacts !== undefined || majors !== undefined) {
+                saveData({ info, schedules, exams, fees, contacts, majors });
+                return res.json({ success: true, message: '✅ تم تحديث قاعدة البيانات بنجاح' });
+            }
+            
+            // 3. إذا كان طلب تسجيل دخول فقط دون إرسال الحقول، نكتفي بإرجاع نجاح الصلاحية
+            return res.json({ success: true, message: '🔓 تم التحقق من الصلاحية الإدارية بنجاح' });
         }
 
-        // الدردشة
+        // ========== قسم معالجة دردشة الطلاب المستفسرين ==========
         if (!question) return res.json({ reply: 'يرجى كتابة سؤال.' });
         const category = smartClassify(question);
         const data = loadData();
@@ -104,5 +115,5 @@ export default async function handler(req, res) {
         }
     }
 
-    return res.status(405).json({ error: 'خطأ' });
+    return res.status(405).json({ error: 'خطأ في التوجيه الرقمي للمخدم' });
 }
