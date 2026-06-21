@@ -1,28 +1,466 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-body { background-color: #fbfcfb; color: #2b3a30; }
-.container { max-width: 900px; margin: 0 auto; padding: 20px; }
-.basmala { text-align: center; font-family: 'Amiri', serif; font-size: 2.5em; color: #0f5132; font-weight: 700; margin: 10px 0; }
-.uni-title { text-align: center; font-size: 2.2em; font-weight: 800; color: #0f5132; line-height: 1.3; }
-.branch-title { text-align: center; font-size: 1.05em; color: #6c757d; letter-spacing: 2px; margin-bottom: 25px; font-weight: 500; }
-.quran-verse { text-align: center; font-size: 1.3em; color: #bfa15f; font-family: 'Amiri', serif; font-weight: 600; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 14px 0; margin: 20px 0; }
-hr { border: 0; height: 1px; background: linear-gradient(to right, transparent, #bfa15f, transparent); margin: 25px 0; opacity: 0.4; }
-.btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 15px 0; }
-.btn { background: #ffffff; color: #0f5132; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 20px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.btn:hover { background: #0f5132; color: #ffffff; border-color: #0f5132; transform: translateY(-1px); }
-.chat-box { background: #ffffff; border: 1px solid #edf2f7; border-radius: 16px; padding: 20px; margin: 20px 0; min-height: 300px; max-height: 500px; overflow-y: auto; }
-.chat-msg { padding: 14px 18px; border-radius: 12px; margin: 10px 0; max-width: 80%; line-height: 1.7; }
-.user-msg { background: #e8f5e9; border-right: 3px solid #0f5132; margin-left: auto; text-align: right; }
-.bot-msg { background: #f5f5f5; border-left: 3px solid #bfa15f; }
-.voice-icon { color: #0f5132; cursor: pointer; margin-left: 8px; }
-.voice-icon:hover { opacity: 0.7; }
-.input-row { display: flex; gap: 10px; align-items: center; }
-.input-row input { flex: 1; padding: 14px 18px; border: 1px solid #cbd5e1; border-radius: 25px; font-size: 1em; outline: none; background: #fff; color: #1e293b; }
-.input-row input:focus { border-color: #0f5132; }
-.mic-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid #cbd5e1; background: #fff; color: #0f5132; font-size: 1.1em; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-.mic-btn:hover { background: #0f5132; color: #fff; }
-.mic-btn.recording { background: #e74c3c; color: #fff; animation: pulse 1s infinite; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); } 50% { box-shadow: 0 0 0 12px rgba(231,76,60,0); } }
-.send-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: #0f5132; color: #fff; font-size: 1.2em; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-.send-btn:hover { background: #0a3a22; }
-.footer { text-align: center; color: #6c757d; font-size: 0.8em; margin-top: 30px; padding: 20px 0; }
-@media (max-width: 600px) { .basmala { font-size: 1.8em; } .uni-title { font-size: 1.4em; } .container { padding: 10px; } .btn { padding: 10px 15px; font-size: 0.85em; } .chat-msg { max-width: 90%; } }
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700;800&display=swap');
+
+:root {
+    --primary-emerald: #064e3b;
+    --secondary-emerald: #0f5132;
+    --premium-gold: #b45309;
+    --gold-light: #fef3c7;
+    --bg-cream: #fdfbf7;
+    --text-slate: #1e293b;
+    --border-soft: #e2e8f0;
+    --white: #ffffff;
+    --radius-lg: 16px;
+    --radius-md: 12px;
+    --shadow-premium: 0 10px 30px -5px rgba(6, 78, 59, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Tajawal', sans-serif;
+}
+
+body {
+    background-color: var(--bg-cream);
+    color: var(--text-slate);
+    direction: rtl;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-premium);
+    padding: 24px;
+    border: 1px solid rgba(180, 83, 9, 0.15);
+    margin-bottom: 30px;
+}
+
+/* الهيدر الأكاديمي */
+.main-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.basmala-text {
+    font-family: 'Amiri', serif;
+    font-size: 1.3rem;
+    color: var(--primary-emerald);
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.university-name {
+    font-size: 1.35rem;
+    color: var(--primary-emerald);
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.branch-badge {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--premium-gold);
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 8px;
+    border: 1px solid rgba(180, 83, 9, 0.2);
+}
+
+.branch-badge.admin {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* الآية القرانية الإضافية الجمالية */
+.verse-wrapper {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.quranic-verse {
+    font-family: 'Amiri', serif;
+    font-size: 1.45rem;
+    color: var(--premium-gold);
+    font-weight: bold;
+    padding: 8px;
+    border-top: 1px double rgba(180, 83, 9, 0.3);
+    border-bottom: 1px double rgba(180, 83, 9, 0.3);
+}
+
+.section-title-divider {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-align: center;
+    margin: 20px 0 12px 0;
+    position: relative;
+    font-weight: 600;
+}
+
+/* أزرار الخدمات الشبكية 2x2 المتناسقة والمبهرة */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.action-premium-card {
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.action-premium-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--premium-gold);
+    background: var(--bg-cream);
+    box-shadow: 0 4px 12px rgba(180, 83, 9, 0.08);
+}
+
+.card-icon {
+    font-size: 1.5rem;
+}
+
+.card-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--secondary-emerald);
+}
+
+/* حاوية المحادثة الذكية المتكاملة */
+.chat-dashboard {
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    background: #fafafa;
+}
+
+.chat-dashboard-header {
+    background: var(--primary-emerald);
+    color: var(--white);
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pulse-live-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulseGlow 1.5s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.chat-viewport {
+    height: 320px;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--white);
+}
+
+/* فقاعات المحادثة */
+.msg-bubble-wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.user-align { justify-content: flex-start; }
+.bot-align { justify-content: flex-end; }
+
+.msg-bubble {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.premium-user-bubble {
+    background: var(--gold-light);
+    color: #78350f;
+    border-top-right-radius: 4px;
+    border: 1px solid rgba(180, 83, 9, 0.15);
+}
+
+.premium-bot-bubble {
+    background: #f1f5f9;
+    color: var(--text-slate);
+    border-top-left-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.audio-trigger {
+    display: inline-block;
+    margin-top: 6px;
+    background: none;
+    border: none;
+    color: var(--primary-emerald);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* لوحة المدخلات السفلية الاحترافية */
+.chat-control-panel {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f8fafc;
+    border-top: 1px solid var(--border-soft);
+    gap: 8px;
+}
+
+.chat-main-input {
+    flex: 1;
+    border: 1px solid var(--border-soft);
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+    background: var(--white);
+}
+
+.chat-main-input:focus {
+    border-color: var(--primary-emerald);
+    box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.08);
+}
+
+.mic-control-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #e2e8f0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.mic-control-btn.is-recording-active {
+    background: #ef4444;
+    color: var(--white);
+    animation: pulseGlow 1.2s infinite;
+}
+
+.send-control-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-emerald);
+    color: var(--white);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.send-control-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* الفوتر الفخم */
+.premium-footer {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.footer-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(180, 83, 9, 0.2), transparent);
+    margin-bottom: 12px;
+}
+
+.copyrights {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.developer-tag {
+    font-size: 0.82rem;
+    color: var(--secondary-emerald);
+    margin-top: 4px;
+}
+
+/* لوحة التحكم والإدارة الفاخرة */
+.admin-theme {
+    border-color: #fca5a5;
+}
+
+.admin-main-card {
+    background: var(--white);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.admin-section-title {
+    font-size: 1.1rem;
+    color: var(--primary-emerald);
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.admin-password-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    outline: none;
+    text-align: center;
+}
+
+.admin-submit-btn, .admin-save-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--secondary-emerald);
+    color: var(--white);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+}
+
+.admin-submit-btn:hover, .admin-save-btn:hover {
+    background: var(--primary-emerald);
+}
+
+.admin-inputs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.admin-field-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--primary-emerald);
+    margin-bottom: 6px;
+}
+
+.admin-styled-textarea {
+    width: 100%;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    font-size: 0.9rem;
+    color: var(--text-slate);
+    resize: vertical;
+    outline: none;
+}
+
+.admin-styled-textarea:focus {
+    border-color: var(--premium-gold);
+}
+
+.admin-status-msg {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.error-color { color: #dc2626; }
+.success-color { color: #10b981; }
+
+.analytics-panel {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 15px;
+    margin: 20px 0;
+}
+
+.analytics-title {
+    font-size: 0.9rem;
+    color: var(--text-slate);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.analytic-box {
+    background: var(--white);
+    border: 1px solid #e2e8f0;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.analytic-number {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--premium-gold);
+}
+
+.analytic-label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.admin-exit-btn {
+    width: 100%;
+    padding: 10px;
+    background: #ef4444;
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
