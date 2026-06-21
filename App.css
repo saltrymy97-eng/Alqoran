@@ -10,11 +10,12 @@
     --bg-light: #f8fafc;
 }
 
-/* ---------------- [إصلاح وإلغاء الفراغ العلوي نهائياً] ---------------- */
+/* ---------------- إصلاح وإلغاء الفراغ العلوي والجانبي نهائياً ---------------- */
 html, body {
     margin: 0 !important;
     padding: 0 !important;
-    height: 100%;
+    width: 100%;
+    overflow-x: hidden; /* يمنع الشاشة من الانسحاب أو التزحزح يميناً ويساراً */
     background-color: var(--bg-light);
 }
 
@@ -23,21 +24,20 @@ body {
     direction: rtl; 
     display: flex; 
     justify-content: center; 
-    align-items: flex-start; /* يبدأ التموضع من أعلى نقطة في الشاشة */
+    align-items: flex-start; 
     font-family: 'Tajawal', sans-serif; 
     -webkit-font-smoothing: antialiased;
-    padding-top: 0 !important; /* تصفير الحشوة العلوية قسرياً */
 }
 
-/* الحاوية الرئيسية للنظام - إغلاق الفراغات */
+/* الحاوية الرئيسية للنظام - معالجة التجاوب الكامل */
 .app-container { 
     width: 100%; 
     max-width: 540px; 
+    box-sizing: border-box; /* يضمن احتساب الحشوات من ضمن العرض الكلي */
     background: var(--pure-white); 
     padding: 25px 20px;
-    border-radius: 0 0 16px 16px; /* زوايا دائرية من الأسفل فقط لإلغاء فراغ الأعلى */
+    border-radius: 0 0 16px 16px; 
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
-    margin-top: 0 !important;
 }
 
 /* ---------------- الهيدر الأكاديمي الفخم ---------------- */
@@ -46,10 +46,9 @@ body {
     position: relative; 
     padding-bottom: 25px; 
     margin-bottom: 20px; 
-    padding-top: 10px; /* مسافة داخلية صغيرة جداً وراقية مظهرها متناسق */
+    padding-top: 10px;
 }
 
-/* خط تزييني ذهبي متلاشي أسفل الهيدر */
 .main-header::after { 
     content: ''; 
     position: absolute; 
@@ -122,7 +121,7 @@ body {
     transform: rotate(45deg); 
 }
 
-/* ---------------- قائمة الخدمات السريعة (بدون مربعات) ---------------- */
+/* ---------------- قائمة الخدمات السريعة ---------------- */
 .quick-actions-grid { 
     display: flex; 
     flex-direction: column; 
@@ -213,8 +212,6 @@ body {
     display: flex; 
     flex-direction: column; 
     gap: 16px; 
-    scrollbar-width: thin; 
-    scrollbar-color: rgba(197, 160, 89, 0.3) transparent; 
 }
 
 .msg-bubble-wrapper {
@@ -273,7 +270,7 @@ body {
     gap: 8px;
 }
 
-/* ---------------- حقل الإدخال VIP (بيضاوي انسيابي) ---------------- */
+/* ---------------- حقل الإدخال VIP ---------------- */
 .chat-control-panel { 
     display: flex; 
     gap: 10px; 
@@ -302,9 +299,7 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0 5px;
-    transition: transform 0.2s;
 }
-.mic-control-btn:hover { transform: scale(1.1); }
 .is-recording-active { animation: pulse-mic 1s infinite alternate; color: #ef4444; }
 
 @keyframes pulse-mic { from { opacity: 0.5; } to { opacity: 1; } }
@@ -320,16 +315,7 @@ body {
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    transition: all 0.3s ease; 
     font-size: 0.9rem;
-}
-.send-control-btn:hover:not(:disabled) { 
-    transform: scale(1.05); 
-    background: var(--luxury-gold); 
-}
-.send-control-btn:disabled {
-    background: #cbd5e1;
-    cursor: not-allowed;
 }
 
 /* ---------------- لوحة التحكم الرقمية للإشراف (الإدارة) ---------------- */
@@ -343,35 +329,37 @@ body {
 
 .admin-main-card { 
     margin-top: 25px; 
+    width: 100%;
 }
 
 .login-secure-box { 
     display: flex; 
     flex-direction: column; 
     gap: 18px; 
-    max-width: 380px; 
+    max-width: 100%; 
     margin: 40px auto; 
     text-align: center; 
 }
 
-/* تحسين حقل الباسورد وحظر المشاكل الإملائية */
+/* تعديل صندوق الإدخال لكلمة المرور ليبدأ الكتابة من اليسار */
 .admin-password-input { 
     width: 100%; 
+    box-sizing: border-box;
     padding: 14px 20px; 
     border-radius: 40px; 
     border: 1px solid rgba(197, 160, 89, 0.3); 
     background: #f8fafc; 
     outline: none; 
     font-size: 1rem; 
-    text-align: center; 
+    text-align: left; /* مؤشر الكتابة يبدأ من اليسار */
+    direction: ltr;  /* الكتابة من اليسار إلى اليمين لتسهيل الرموز المشفرة */
     color: var(--dark-slate);
     transition: all 0.3s;
-    direction: ltr; /* الكتابة من اليسار لليمين مخصصة لكلمة المرور الإدارية */
 }
+
 .admin-password-input:focus { 
     border-color: var(--royal-green); 
     background: var(--pure-white); 
-    box-shadow: 0 4px 15px rgba(8, 61, 43, 0.05);
 }
 
 .admin-submit-btn { 
@@ -383,162 +371,239 @@ body {
     font-weight: bold; 
     cursor: pointer; 
     font-size: 1rem; 
-    transition: all 0.3s; 
-}
-.admin-submit-btn:hover { 
-    background: var(--luxury-gold); 
-    transform: translateY(-2px); 
 }
 
 .admin-dashboard-layout { 
     display: flex; 
     flex-direction: column; 
     gap: 25px; 
+    width: 100%;
 }
 
-/* =================== [تطوير قسم هندسة لوحة الإحصائيات المتقدمة الفاخرة] =================== */
+/* ---------------- لوحة الإحصائيات المتقدمة وحوكمة البيانات ---------------- */
 .analytics-panel { 
-    margin-top: 15px; 
-    border: 1px solid #e2e8f0; 
-    background: #ffffff;
+    margin-top: 5px; 
+    border: 1px solid rgba(197, 160, 89, 0.2); 
+    background: linear-gradient(145deg, #ffffff, #fdfbf7); 
     padding: 20px; 
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+    box-shadow: 0 4px 25px rgba(8, 61, 43, 0.02);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .analytics-title { 
     font-family: 'Amiri', serif; 
-    font-size: 1.2rem; 
+    font-size: 1.25rem; 
     color: var(--royal-green); 
-    margin-bottom: 16px; 
+    margin-bottom: 18px; 
     font-weight: 700;
     text-align: right;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .analytics-grid { 
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* عمودين متساويين ومتجاوبين */
-    gap: 14px; 
+    display: flex;
+    gap: 12px; 
+    width: 100%;
+    box-sizing: border-box;
     margin-bottom: 20px;
 }
 
 .analytic-box { 
-    background: #f8fafc; 
+    flex: 1; 
+    background: #ffffff; 
     border: 1px solid #f1f5f9;
-    padding: 16px; 
+    border-top: 3px solid var(--royal-green); 
+    padding: 18px 10px; 
     border-radius: 12px; 
     text-align: center; 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
     transition: all 0.3s ease;
 }
+
+.analytic-box:last-child {
+    border-top-color: var(--luxury-gold);
+}
+
 .analytic-box:hover {
-    transform: translateY(-2px);
-    border-color: rgba(197, 160, 89, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(197, 160, 89, 0.1);
 }
 
 .analytic-big-icon {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
 
 .analytic-number { 
     display: block; 
-    font-size: 1.85rem; 
+    font-size: 2.1rem; 
     font-weight: 800; 
     color: var(--royal-green); 
     line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.analytic-box:last-child .analytic-number {
+    color: #b45309;
 }
 
 .analytic-label { 
     font-size: 0.84rem; 
-    color: #64748b; 
-    font-weight: 500;
+    color: #475569; 
+    font-weight: 600;
 }
 
-/* رصد قائمة الأسئلة الـ 5 الأكثر شيوعاً وتكراراً من الطلاب */
-.top-queries-container {
-    margin-top: 18px;
-    border-top: 1px dashed #e2e8f0;
+/* ---------------- تقسيم الفئات الأكاديمية الجديدة ---------------- */
+.categories-panel {
+    margin-top: 20px;
+    border-top: 1px dashed rgba(197, 160, 89, 0.3);
     padding-top: 16px;
+    width: 100%;
 }
-.top-queries-title {
-    font-size: 0.92rem;
-    color: #b45309; /* ذهبي غامق ملكي للتحذيرات والمؤشرات */
+
+.categories-title {
+    font-size: 0.95rem;
+    color: var(--royal-green);
     font-weight: 700;
     margin-bottom: 12px;
+    text-align: right;
 }
-.top-queries-list {
+
+.categories-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-.top-query-row {
+
+.category-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background: #f8fafc;
     padding: 10px 14px;
     border-radius: 8px;
     border: 1px solid #f1f5f9;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
-.query-rank {
-    background: var(--luxury-gold);
-    color: #ffffff;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
+
+.category-info {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.78rem;
-    font-weight: 700;
-    margin-left: 12px;
-}
-.query-text {
-    flex: 1;
-    color: var(--dark-slate);
-    text-align: right;
+    gap: 8px;
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* قص الأسئلة الطويلة جداً بشكل جمالي */
+    color: var(--dark-slate);
 }
-.query-counter-badge {
+
+.category-badge {
     background: rgba(8, 61, 43, 0.06);
     color: var(--royal-green);
-    padding: 4px 10px;
+    padding: 3px 9px;
     border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* ---------------- هيكل وعناصر الرسم البياني التفاعلي المرن ---------------- */
+.top-queries-container {
+    margin-top: 22px;
+    border-top: 1px dashed rgba(197, 160, 89, 0.3);
+    padding-top: 16px;
+    width: 100%;
+}
+
+.top-queries-title {
+    font-size: 0.95rem;
+    color: var(--royal-green);
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: right;
+}
+
+.chart-container {
+    margin-top: 15px;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chart-row {
+    margin-bottom: 12px;
+}
+
+.chart-row:last-child {
+    margin-bottom: 0;
+}
+
+.chart-label-group {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--dark-slate);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.chart-question-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 78%;
+    text-align: right;
+}
+
+.chart-count-badge {
+    color: #b45309;
     font-size: 0.78rem;
     font-weight: 700;
 }
-/* =================================================================== */
 
+.chart-bar-wrapper {
+    background: #e2e8f0;
+    border-radius: 20px;
+    height: 9px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.chart-bar-fill {
+    background: linear-gradient(270deg, var(--royal-green), var(--luxury-gold));
+    height: 100%;
+    border-radius: 20px;
+    transition: width 1s ease-out;
+}
+
+/* ---------------- مدخلات لوحة الإدارة ---------------- */
 .admin-inputs-grid { 
     display: flex; 
     flex-direction: column; 
     gap: 22px; 
+    width: 100%;
 }
 
 .input-group-wrapper { 
     display: flex; 
     flex-direction: column; 
     gap: 8px; 
+    width: 100%;
 }
 
 .admin-field-label { 
     font-size: 0.95rem; 
     font-weight: 700; 
     color: var(--royal-green); 
-    padding-right: 2px; 
 }
 
 .admin-styled-textarea { 
     width: 100%; 
+    box-sizing: border-box;
     padding: 14px; 
     border-radius: 10px; 
     border: 1px solid #e2e8f0; 
@@ -549,17 +614,17 @@ body {
     font-family: 'Tajawal', sans-serif;
     line-height: 1.65;
     color: var(--dark-slate);
-    transition: all 0.3s;
 }
+
 .admin-styled-textarea:focus { 
     border-color: var(--luxury-gold); 
     background: var(--pure-white); 
-    box-shadow: 0 4px 12px rgba(197, 160, 89, 0.05);
 }
 
 .admin-action-bar { 
     margin-top: 10px; 
     text-align: center; 
+    width: 100%;
 }
 
 .admin-save-btn { 
@@ -572,10 +637,6 @@ body {
     font-weight: 700; 
     cursor: pointer; 
     font-size: 1rem;
-    transition: background 0.3s;
-}
-.admin-save-btn:hover { 
-    background: #04261b; 
 }
 
 .admin-exit-btn { 
@@ -588,12 +649,12 @@ body {
     margin-top: 5px; 
     font-size: 0.92rem;
     font-weight: 600;
-    transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
 }
 .admin-exit-btn:hover { 
     background: #fee2e2; 
     color: #991b1b; 
-    border-color: #fca5a5; 
 }
 
 .admin-status-msg { 
@@ -605,12 +666,13 @@ body {
 .error-color { color: #b91c1c; }
 .success-color { color: #15803d; }
 
-/* ---------------- الفوتر (بصمة المهندس المطوّر) ---------------- */
+/* ---------------- الفوتر الأكاديمي ---------------- */
 .premium-footer { 
     text-align: center; 
     margin-top: 45px; 
     padding-top: 20px; 
     border-top: 1px dashed rgba(197, 160, 89, 0.25); 
+    width: 100%;
 }
 
 .copyrights {
@@ -620,7 +682,6 @@ body {
 }
 
 .developer-tag {
-    font-family: 'Tajawal', sans-serif;
     font-size: 0.85rem;
     color: #64748b;
 }
