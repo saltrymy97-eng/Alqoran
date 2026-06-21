@@ -112,7 +112,7 @@ function App() {
                 React.createElement('h3', { style: { color: '#d4af37', textAlign: 'center' } }, '🔐 لوحة الإدارة'),
                 !adminLogged ?
                     React.createElement('div', null,
-                        React.createElement('input', { type: 'password', placeholder: '🔑 كلمة مرور المشرف', value: adminPass, onChange: e => setAdminPass(e.target.value), style: { width: '100%', padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '12px', color: '#fff', fontSize: '1em', marginBottom: '10px' } }),
+                        React.createElement('input', { type: 'password', placeholder: '🔑 كلمة مرور المشرف', value: adminPass, onChange: e => setAdminPass(e.target.value), style: { width: '100%', padding: '14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '12px', color: '#fff', fontSize: '1em', marginBottom: '10px', direction: 'ltr' } }),
                         React.createElement('button', { className: 'btn', onClick: loginAdmin, style: { width: '100%' } }, 'دخول'),
                         adminMsg && React.createElement('p', { style: { color: '#e74c3c', textAlign: 'center' } }, adminMsg)
                     )
