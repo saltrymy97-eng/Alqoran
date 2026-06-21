@@ -161,7 +161,7 @@ function App() {
         majors: '🎓 التخصصات الأكاديمية والبرامج'
     };
 
-    // ========== عرض واجهة الطلاب ==========
+    // ========== أولاً: عرض واجهة الطلاب التفاعلية ==========
     if (!adminMode) {
         return React.createElement('div', { className: 'app-container' },
             React.createElement('header', { className: 'main-header' },
@@ -229,7 +229,7 @@ function App() {
         );
     }
 
-    // ========== عرض لوحة الإدارة الفاخرة بعد إصلاح ودمج الإحصائيات الفعلي هندسياً ==========
+    // ========== ثانياً: لوحة التحكم الرقمية للادارة وحوكمة الإحصائيات والرسوم البيانية ==========
     return React.createElement('div', { className: 'app-container admin-theme' },
         React.createElement('header', { className: 'main-header' },
             React.createElement('div', { className: 'basmala-text' }, 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'),
@@ -255,9 +255,11 @@ function App() {
             :
                 React.createElement('div', { className: 'admin-dashboard-layout' },
                     
-                    // =================== [هنا تم الدمج الفعلي المطور لوحدات الإحصائيات] ===================
+                    // =================== [ لوحة الإحصائيات المتقدمة، الفئات، والرسوم البيانية ] ===================
                     stats ? React.createElement('div', { className: 'analytics-panel' },
-                        React.createElement('h3', { className: 'analytics-title' }, '📊 رصد الأداء الإحصائي الفوري للأنظمة'),
+                        React.createElement('h3', { className: 'analytics-title' }, '📊 رصد الأداء الإحصائي وتحليل البيانات الفوري'),
+                        
+                        /* عدادات البطاقات الرقمية المتجاوبة */
                         React.createElement('div', { className: 'analytics-grid' },
                             React.createElement('div', { className: 'analytic-box' }, 
                                 React.createElement('span', { className: 'analytic-big-icon' }, '💬'),
@@ -271,17 +273,49 @@ function App() {
                             )
                         ),
                         
-                        // رصد وعرض قائمة الأسئلة الـ 5 الأكثر طلباً من قبل الطلاب بشكل تفاعلي
-                        stats.top && stats.top.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
-                            React.createElement('h4', { className: 'top-queries-title' }, '🔝 الأسئلة الأكثر تكراراً وطلباً من الطلاب:'),
-                            React.createElement('div', { className: 'top-queries-list' },
-                                stats.top.slice(0, 5).map((item, index) => 
-                                    React.createElement('div', { key: index, className: 'top-query-row' },
-                                        React.createElement('span', { className: 'query-rank' }, index + 1),
-                                        React.createElement('span', { className: 'query-text' }, item.question),
-                                        React.createElement('span', { className: 'query-counter-badge' }, `${item.count} تكرار`)
+                        /* 1. نظام تصنيف وتقسيم الفئات الأكاديمية */
+                        React.createElement('div', { className: 'categories-panel' },
+                            React.createElement('h4', { className: 'categories-title' }, '🗂️ توزيع الاستفسارات حسب الفئات الأكاديمية:'),
+                            React.createElement('div', { className: 'categories-list' },
+                                [
+                                    { name: 'الجداول الدراسية والمحاضرات', icon: '📚', count: stats.schedules_count || 0 },
+                                    { name: 'الامتحانات والاختبارات', icon: '📝', count: stats.exams_count || 0 },
+                                    { name: 'الشؤون المالية والرسوم', icon: '💰', count: stats.fees_count || 0 },
+                                    { name: 'التخصصات والقبول والتسجيل', icon: '🎓', count: stats.majors_count || 0 }
+                                ].map((cat, idx) => 
+                                    React.createElement('div', { key: idx, className: 'category-row' },
+                                        React.createElement('div', { className: 'category-info' },
+                                            React.createElement('span', null, cat.icon),
+                                            React.createElement('span', null, cat.name)
+                                        ),
+                                        React.createElement('span', { className: 'category-badge' }, `${cat.count} استفسار`)
                                     )
                                 )
+                            )
+                        ),
+
+                        /* 2. الأسئلة الخمسة الأكثر تكراراً المدمجة بالرسم البياني الأفقي المرن */
+                        stats.top && stats.top.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
+                            React.createElement('h4', { className: 'top-queries-title' }, '🔝 الأسئلة الـ 5 الأكثر شيوعاً وطلباً (تحليل بياني):'),
+                            
+                            React.createElement('div', { className: 'chart-container' },
+                                stats.top.slice(0, 5).map((item, index) => {
+                                    const maxCount = stats.top[0].count || 1;
+                                    const percentage = Math.min(100, Math.round((item.count / maxCount) * 100));
+
+                                    return React.createElement('div', { key: index, className: 'chart-row' },
+                                        React.createElement('div', { className: 'chart-label-group' },
+                                            React.createElement('span', { className: 'chart-question-text' }, `${index + 1}. ${item.question}`),
+                                            React.createElement('span', { className: 'chart-count-badge' }, `${item.count} تكرار`)
+                                        ),
+                                        React.createElement('div', { className: 'chart-bar-wrapper' },
+                                            React.createElement('div', { 
+                                                className: 'chart-bar-fill', 
+                                                style: { width: `${percentage}%` } 
+                                            })
+                                        )
+                                    );
+                                })
                             )
                         ) : null
                     ) : null,
