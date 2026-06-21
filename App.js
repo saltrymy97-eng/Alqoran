@@ -14,14 +14,15 @@ function App() {
     const [adminMsg, setAdminMsg] = useState('');
     const [stats, setStats] = useState(null);
     const chatRef = useRef(null);
-    const mediaRecorder = useRef(null);
-    const audioChunks = useRef([]);
+    
+    // المرجع الخاص بميزة التعرف على الصوت
+    const recognitionRef = useRef(null);
 
     const ADMIN_SECRET = 'ادارة جامعة القران الكريم وعلومه';
 
     useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages]);
 
-    // 1. إرسال أسئلة الطلاب (متوافق مع السحابة)
+    // دالة إرسال الرسائل إلى السحابة
     const sendMessage = async (text) => {
         if (!text || !text.trim() || loading) return;
         const q = text.trim();
@@ -66,36 +67,51 @@ function App() {
         window.speechSynthesis.speak(u);
     };
 
-    const startRecording = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder.current = new MediaRecorder(stream);
-            audioChunks.current = [];
-            mediaRecorder.current.ondataavailable = (e) => audioChunks.current.push(e.data);
-            mediaRecorder.current.onstop = async () => {
-                const blob = new Blob(audioChunks.current, { type: 'audio/wav' });
-                const fd = new FormData();
-                fd.append('audio', blob, 'recording.wav');
-                try {
-                    const r = await fetch('/api/speech-to-text', { method: 'POST', body: fd });
-                    const d = await r.json();
-                    if (d.text) sendMessage(d.text);
-                } catch (e) {}
-                stream.getTracks().forEach(t => t.stop());
-            };
-            mediaRecorder.current.start();
+    // البدء بالتسجيل الصوتي الفوري والمجاني
+    const startRecording = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("⚠️ متصفحك الحالي لا يدعم ميزة التعرف على الصوت الافتراضية. جرب متصفح جوجل كروم.");
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'ar-SA'; // ضبط اللغة للعربية
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
             setRecording(true);
-        } catch (e) {}
+        };
+
+        recognition.onerror = (e) => {
+            console.error(e);
+            setRecording(false);
+        };
+
+        recognition.onend = () => {
+            setRecording(false);
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript && transcript.trim() !== "") {
+                sendMessage(transcript); // إرسال النص المستخرج فوراً كرسالة للذكاء الاصطناعي
+            }
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
     };
 
+    // إيقاف التسجيل
     const stopRecording = () => {
-        if (mediaRecorder.current) {
-            mediaRecorder.current.stop();
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
             setRecording(false);
         }
     };
 
-    // 2. تسجيل دخول لوحة الإدارة (متوافق مع السحابة)
     const loginAdmin = async () => {
         const cleanedPass = adminPass.trim();
         if (!cleanedPass) return;
@@ -124,7 +140,6 @@ function App() {
         }
     };
 
-    // 3. قراءة البيانات المحدثة من السحابة لطلبها بالـ GET
     const loadAdminData = async () => {
         try {
             const res = await fetch('/api/chat');
@@ -143,7 +158,6 @@ function App() {
         }
     };
 
-    // 4. حفظ تعديلات الإدارة في السحابة
     const saveAdminData = async () => {
         try {
             const res = await fetch('/api/chat', {
@@ -168,7 +182,7 @@ function App() {
     const fieldLabels = {
         info: '📋 التعريف العام بالفرع',
         schedules: '📚 إدارة الجداول الدراسية',
-        exams: '📝 إدارة Mواعيد والامتحانات',
+        exams: '📝 إدارة المواعيد والامتحانات',
         fees: '💰 شؤون الرسوم المالية',
         contacts: '📞 قنوات الاتصال والتواصل',
         majors: '🎓 التخصصات الأكاديمية والبرامج'
