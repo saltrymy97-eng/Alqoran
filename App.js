@@ -45,24 +45,40 @@ function App() {
             const data = await res.json();
             const reply = data.reply || 'عذراً، لا توجد معلومة محددة حول هذا الاستفسار حالياً.';
             setMessages(prev => [...prev, { role: 'bot', content: reply }]);
-            speakText(reply);
+            
+            // 🚫 تم إلغاء ميزة النطق التلقائي هنا لتصبح اختيارية عبر النقر على زر استمع فقط بناءً على رغبتك.
         } catch (e) {
             setMessages(prev => [...prev, { role: 'bot', content: '⚠️ خطأ في الاتصال بالخادم الرقمي السحابي.' }]);
         }
         setLoading(false);
     };
 
+    // دالة نطق النص - مُحدثة بالكامل لتعمل بصوت رجل فصيح
     const speakText = (text) => {
         if (!window.speechSynthesis || !text) return;
+        
+        // إيقاف أي قراءة صوتية جارية فوراً لمنع تراكب الأصوات
         window.speechSynthesis.cancel();
+        
         const u = new SpeechSynthesisUtterance(text);
         u.lang = 'ar-SA';
-        u.rate = 0.95;
+        u.rate = 1.0; // سرعة نطق طبيعية متزنة تليق بموظف استقبال
         u.pitch = 1.0;
         
+        // جلب قائمة الأصوات المتاحة في نظام تشغيل الطالب وفلترة صوت رجل فصيح
         const voices = window.speechSynthesis.getVoices();
-        const arVoice = voices.find(v => v.lang.startsWith('ar'));
-        if (arVoice) u.voice = arVoice;
+        const maleVoice = voices.find(v => 
+            v.lang.startsWith('ar') && 
+            (v.name.toLowerCase().includes('male') || v.name.includes('Naeem') || v.name.includes('Riyadh') || v.name.includes('Zayd'))
+        );
+        
+        // إذا لم يعثر على الصوت المخصص للرجل، يستخدم الصوت العربي الافتراضي المتوفر في الجهاز كبديل أمان
+        if (maleVoice) {
+            u.voice = maleVoice;
+        } else {
+            const defaultAr = voices.find(v => v.lang.startsWith('ar'));
+            if (defaultAr) u.voice = defaultAr;
+        }
 
         window.speechSynthesis.speak(u);
     };
@@ -144,14 +160,19 @@ function App() {
         try {
             const res = await fetch('/api/chat');
             const data = await res.json();
+            
+            // فك كائن البيانات وجلب البيانات الأساسية من الحقل الجامعي المخزن في السيرفر الجديد
+            const uData = data.university_data || data || {};
             setAdminData({
-                info: data.info || '',
-                schedules: data.schedules || '',
-                exams: data.exams || '',
-                fees: data.fees || '',
-                contacts: data.contacts || '',
-                majors: data.majors || ''
+                info: uData.info || '',
+                schedules: uData.schedules || '',
+                exams: uData.exams || '',
+                fees: uData.fees || '',
+                contacts: uData.contacts || '',
+                majors: uData.majors || ''
             });
+            
+            // تعيين الإحصائيات الفورية القادمة من محرك السيرفر
             if (data.stats) setStats(data.stats);
         } catch(e) {
             setAdminMsg('⚠️ فشل في جلب البيانات من السحابة');
@@ -223,7 +244,7 @@ function App() {
                         React.createElement('div', { key: i, className: `msg-bubble-wrapper ${msg.role === 'user' ? 'user-align' : 'bot-align'}` },
                             React.createElement('div', { className: `msg-bubble ${msg.role === 'user' ? 'premium-user-bubble' : 'premium-bot-bubble'}` },
                                 React.createElement('p', { className: 'msg-text' }, msg.content),
-                                msg.role === 'bot' && React.createElement('button', { className: 'audio-trigger', onClick: () => speakText(msg.content), title: 'استمع للنطق الصوتي' }, '🔊 استمع')
+                                msg.role === 'bot' && React.createElement('button', { className: 'audio-trigger', onClick: () => speakText(msg.content), title: 'استمع للنطق الصوتي للرد' }, '🔊 استمع')
                             )
                         )
                     ),
@@ -303,40 +324,33 @@ function App() {
                             React.createElement('h4', { className: 'categories-title' }, '🗂️ توزيع الاستفسارات حسب الفئات الأكاديمية:'),
                             React.createElement('div', { className: 'categories-list' },
                                 [
-                                    { name: 'الجداول الدراسية والمحاضرات', icon: '📚', count: stats.schedules_count || 0 },
-                                    { name: 'الامتحانات والاختبارات', icon: '📝', count: stats.exams_count || 0 },
-                                    { name: 'الشؤون المالية والرسوم', icon: '💰', count: stats.fees_count || 0 },
-                                    { name: 'التخصصات والقبول والتسجيل', icon: '🎓', count: stats.majors_count || 0 }
+                                    { name: 'الجداول الدراسية والمحاضرات', icon: '📚', key: 'schedules' },
+                                    { name: 'الامتحانات والاختبارات', icon: '📝', key: 'exams' },
+                                    { name: 'الشؤون المالية والرسوم', icon: '💰', key: 'fees' },
+                                    { name: 'التخصصات والقبول والتسجيل', icon: '🎓', key: 'majors' },
+                                    { name: 'معلومات عامة وتعريفية', icon: '📋', key: 'info' }
                                 ].map((cat, idx) => 
                                     React.createElement('div', { key: idx, className: 'category-row' },
                                         React.createElement('div', { className: 'category-info' },
                                             React.createElement('span', null, cat.icon),
                                             React.createElement('span', null, cat.name)
                                         ),
-                                        React.createElement('span', { className: 'category-badge' }, `${cat.count} استفسار`)
+                                        React.createElement('span', { className: 'category-badge' }, `${stats.categories?.[cat.key] || 0} استفسار`)
                                     )
                                 )
                             )
                         ),
 
-                        stats.top && stats.top.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
-                            React.createElement('h4', { className: 'top-queries-title' }, '🔝 الأسئلة الـ 5 الأكثر شيوعاً وطلباً (تحليل بياني):'),
+                        // التعديل البياني الحقيقي هنا: عرض آخر 5 أسئلة طرحها الطلاب حياً من الـ Logs بدلاً من الحقول الفارغة السابقة
+                        stats.latest_questions && stats.latest_questions.length > 0 ? React.createElement('div', { className: 'top-queries-container' },
+                            React.createElement('h4', { className: 'top-queries-title' }, '🔝 آخر 5 أسئلة تم طرحها من قبل الطلاب حالياً:'),
                             
-                            React.createElement('div', { className: 'chart-container' },
-                                stats.top.slice(0, 5).map((item, index) => {
-                                    const maxCount = stats.top[0].count || 1;
-                                    const percentage = Math.min(100, Math.round((item.count / maxCount) * 100));
-
-                                    return React.createElement('div', { key: index, className: 'chart-row' },
-                                        React.createElement('div', { className: 'chart-label-group' },
-                                            React.createElement('span', { className: 'chart-question-text' }, `${index + 1}. ${item.question}`),
-                                            React.createElement('span', { className: 'chart-count-badge' }, `${item.count} تكرار`)
-                                        ),
-                                        React.createElement('div', { className: 'chart-bar-wrapper' },
-                                            React.createElement('div', { 
-                                                className: 'chart-bar-fill', 
-                                                style: { width: `${percentage}%` } 
-                                            })
+                            React.createElement('div', { className: 'chart-container', style: { display: 'flex', flexDirection: 'column', gap: '8px' } },
+                                stats.latest_questions.map((item, index) => {
+                                    return React.createElement('div', { key: index, className: 'chart-row', style: { background: '#ffffff', padding: '10px', borderRadius: '6px', borderRight: '4px solid #1a3a5f', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' } },
+                                        React.createElement('div', { className: 'chart-label-group', style: { display: 'flex', justifyContent: 'between', width: '100%' } },
+                                            React.createElement('span', { className: 'chart-question-text', style: { fontWeight: 'bold', color: '#2d3748' } }, `📌 ${item.question}`),
+                                            React.createElement('span', { className: 'chart-count-badge', style: { fontSize: '11px', color: '#718096', background: '#edf2f7', padding: '2px 8px', borderRadius: '10px' } }, `فئة: ${item.category || 'عامة'}`)
                                         )
                                     );
                                 })
